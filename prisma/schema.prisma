@@ -31,8 +31,9 @@ model User {
     CreatedAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    accounts Account[]
-    sessions Session[]
+    accounts      Account[]
+    sessions      Session[]
+    purchaseItems PurchaseItem[]
 }
 
 // for OAuth providers
@@ -93,9 +94,9 @@ model Product {
     // The actual protected file to download
     fileAsset FileAsset?
 
-    seller    User       @relation(fields: [sellerId], references: [id])
-    purchases Purchase[]
-    cartItems CartItem[]
+    seller        User           @relation(fields: [sellerId], references: [id])
+    cartItems     CartItem[]
+    purchaseItems PurchaseItem[]
 }
 
 // the Secure File (Hidden from public)
@@ -111,16 +112,30 @@ model FileAsset {
 
 // The Transaction (Proof of ownership)
 model Purchase {
+    id      String @id @default(cuid())
+    buyerId String
+    buyer   User   @relation(fields: [buyerId], references: [id])
+
+    totalAmount Float
+    createdAt   DateTime @default(now())
+
+    items PurchaseItem[]
+}
+
+model PurchaseItem {
     id         String   @id @default(cuid())
-    sellerId   String
-    productId  String
-    amountPaid Float
-    createdAt  DateTime @default(now())
+    purchaseId String
+    purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
 
-    buyer   User    @relation(fields: [sellerId], references: [id])
-    product Product @relation(fields: [productId], references: [id])
+    productId String
+    product   Product @relation(fields: [productId], references: [id])
 
-    @@unique([sellerId, productId]) // Prevent double-buying
+    sellerId String
+    seller   User   @relation(fields: [sellerId], references: [id])
+
+    price Float
+
+    @@unique([purchaseId, productId])
 }
 
 // The cart database for each user

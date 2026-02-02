@@ -30,7 +30,7 @@ export default async function ItemsPage() {
             <div className="flex flex-col md:flex-row gap-2 items-center justify-between w-full font-medium font-mono text-black bg-white border-2 border-black rounded-2xl px-4 py-2">
                 <span>Quantity: {cartItems.length}</span>
                 <span>Total Price: ${totalPrice.toFixed(2)}</span>
-                <BuyButton price={totalPrice} />
+				<BuyButton price={totalPrice} />
             </div>
             <div className="w-full flex flex-wrap justify-center items-center gap-6">
                 {cartItems.map((item) => (
