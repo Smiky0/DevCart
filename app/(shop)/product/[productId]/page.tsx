@@ -2,6 +2,7 @@ import AddToCartButton from "@/components/products/buttons/AddToCartButton";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -43,9 +44,11 @@ export default async function ProductPage({
                     {/* IMAGE */}
                     <div className="product-image-container">
                         <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-gray-100">
-                            <img
+                            <Image
                                 src={product.images[0]}
                                 alt={product.title}
+                                width={1080}
+                                height={1000}
                                 className="h-full w-full object-cover"
                             />
                         </div>
@@ -61,12 +64,10 @@ export default async function ProductPage({
                             <p className="text-3xl font-bold text-gray-900">
                                 ${(product.price / 100).toFixed(2)}
                             </p>
-                            {/* <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-black px-8 py-4 font-bold text-white cursor-pointer hover:bg-gray-800"> */}
                             <AddToCartButton
                                 userId={userId}
                                 productId={productId}
                             />
-                            {/* </button> */}
                         </div>
 
                         <div className="mt-10 prose prose-gray text-gray-600">
