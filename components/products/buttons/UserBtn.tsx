@@ -34,6 +34,10 @@ export default function UserLogin({
         router.push("/studio");
         setIsOpen(false);
     };
+    const handleOrders = () => {
+        router.push("/orders");
+        setIsOpen(false);
+    };
     const handleSignOut = async () => {
         await signOut();
         setIsOpen(false);
@@ -67,6 +71,16 @@ export default function UserLogin({
                         {isOpen && (
                             <div className="absolute right-0 top-full mt-2 w-52 p-2 bg-white border-2 border-black/30 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 transition-all duration-500 ease-in-out">
                                 <div className="py-1">
+                                    <button
+                                        onClick={handleOrders}
+                                        className="w-full text-left px-4 py-2 text-sm text-black cursor-pointer hover:bg-gray-300 flex items-center gap-2 transition-colors rounded-lg"
+                                    >
+                                        <LayoutDashboard
+                                            size={16}
+                                            className="text-black"
+                                        />
+                                        Your Orders
+                                    </button>
                                     <button
                                         onClick={handleDashboard}
                                         className="w-full text-left px-4 py-2 text-sm text-black cursor-pointer hover:bg-gray-300 flex items-center gap-2 transition-colors rounded-lg"
