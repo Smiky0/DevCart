@@ -24,7 +24,7 @@ export async function processOrder() {
     });
     // check if cart is valid or has items
     if (!userCart || userCart.items.length === 0) {
-        throw new Error("Your cart is empty!");
+        throw new Error("Order cart is empty!");
     }
 
     // get the total cart amount
