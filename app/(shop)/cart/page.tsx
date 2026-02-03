@@ -2,6 +2,7 @@ import { BuyButton } from "@/components/products/buttons/BuyButton";
 import ProductCard from "@/components/products/ProductCard";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ItemsPage() {
@@ -27,11 +28,20 @@ export default async function ItemsPage() {
     }, 0);
     return (
         <div className="flex flex-col justify-center items-center gap-4">
-            <div className="flex flex-col md:flex-row gap-2 items-center justify-between w-full font-medium font-mono text-black bg-white border-2 border-black rounded-2xl px-4 py-2">
-                <span>Quantity: {cartItems.length}</span>
-                <span>Total Price: ${totalPrice.toFixed(2)}</span>
-				<BuyButton price={totalPrice} />
-            </div>
+            {cartItems.length ?
+                <div className="flex flex-col md:flex-row gap-2 items-center justify-between w-full font-medium font-mono text-black bg-white border-2 border-black rounded-2xl px-4 py-2">
+                    <span>Quantity: {cartItems.length}</span>
+                    <span>Total Price: ${totalPrice.toFixed(2)}</span>
+                    <BuyButton price={totalPrice} />
+                </div>
+            :   <div className="text-black/80 text-lg mt-10">
+                    Your cart seems empty. Add items from{" "}
+                    <Link href={"/"} className="text-blue-500 underline">
+                        here.
+                    </Link>
+                </div>
+            }
+
             <div className="w-full flex flex-wrap justify-center items-center gap-6">
                 {cartItems.map((item) => (
                     <ProductCard
