@@ -8,30 +8,35 @@ export default async function Navbar() {
     const session = await auth();
 
     return (
-        <div className="min-w-xs flex flex-col justify-between items-center mb-6 gap-4">
-            <div className="w-full flex justify-between items-center rounded-full text-2xl px-6 py-2 gap-2 bg-black/80 shadow-lg shadow-black/40 border-2 border-white/60">
-                <Link
-                    href={"/"}
-                    className="text-white text-shadow-lg font-mono"
-                >
-                    DevCart
-                </Link>
-                <span className="hidden md:flex">
-                    <SearchBar />
-                </span>
-                <div className="flex gap-4 justify-center items-center">
-                    <UserLogin userSession={session} />
-                    <Link 
-                        href={"/cart"}
-                        className="hidden md:flex justify-center items-center bg-yellow-400 hover:bg-yellow-400/90 transition-all duration-300 ease-in-out p-2 px-5 rounded-full cursor-pointer"
+        <header className="sticky top-0 z-50 w-full">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 pb-3">
+                <div className="flex items-center justify-between gap-4 rounded-4xl bg-white/60 backdrop-blur-xl shadow-lg shadow-orange-500/5 border border-white px-6 py-2 lg:py-3">
+                    {/* Logo */}
+                    <Link
+                        href="/"
+                        className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground hover:text-primary transition-colors duration-200"
                     >
-                        <ShoppingCart color="black" />
+                        <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-white text-sm font-black">
+                            D
+                        </span>
+                        <span className="hidden sm:inline font-mono">
+                            DevCart
+                        </span>
                     </Link>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-3">
+                        <UserLogin userSession={session} />
+                        <Link
+                            href="/cart"
+                            className="flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/60 hover:bg-primary/80 text-white transition-all duration-200 hover:scale-105"
+                        >
+                            <ShoppingCart size={20} />
+                        </Link>
+                    </div>
                 </div>
+
             </div>
-            <span className="flex md:hidden p-1 bg-black rounded-4xl">
-                <SearchBar />
-            </span>
-        </div>
+        </header>
     );
 }

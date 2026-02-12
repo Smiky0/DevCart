@@ -48,8 +48,8 @@ function AddToCartButton({
         <div>
             <button
                 onClick={handleOnClick}
-                disabled={loading}
-                className="flex items-center gap-2 rounded-lg bg-black border-2 border-white/40 px-4 py-2.5 text-sm font-medium text-white transition-all duration-300 active:scale-95 hover:border-white/90 cursor-pointer"
+                disabled={productAdded || loading}
+                className="flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <ShoppingCart className="h-4 w-4" />
                 {productAdded ? "Added" : "Add to Cart"}

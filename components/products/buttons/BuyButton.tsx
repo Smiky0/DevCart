@@ -22,7 +22,7 @@ export function BuyButton({ price }: { price: number }) {
     return (
         <button
             onClick={handleBuy}
-            className="rounded-2xl border-2 border-black/40 px-4 py-2 bg-green-300 font-bold text-base cursor-pointer"
+            className="rounded-xl bg-success hover:bg-success/90 px-6 py-3 font-bold text-sm text-white cursor-pointer transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md"
         >
             Buy Now for ${price.toFixed(2)}
         </button>

@@ -42,10 +42,10 @@ function RemoveFromCart({
             <button
                 onClick={handleOnClick}
                 disabled={loading}
-                className="flex items-center gap-2 rounded-lg bg-black border border-white/40 px-4 py-2.5 text-sm font-medium text-white transition-all duration-300 active:scale-95 hover:bg-red-700 cursor-pointer"
+                className="flex items-center gap-2 rounded-xl bg-danger/10 border border-danger/20 text-danger px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95 hover:bg-danger hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <ShoppingCart className="h-4 w-4" />
-                {"Remove from Cart"}
+                {"Remove"}
             </button>
         </div>
     );

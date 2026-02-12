@@ -26,56 +26,85 @@ export default async function ProductPage({
         return notFound();
     }
     return (
-        <div className="min-h-screen bg-white rounded-2xl">
-            {/* ... Navigation ... */}
-            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="py-6 animate-fade-in-up">
+            {/* Navigation */}
+            <div className="mb-8">
                 <Link
                     href="/"
-                    className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary transition-colors duration-200 group"
                 >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
                     Back to Marketplace
                 </Link>
             </div>
 
-            {/* ... Main Content ... */}
-            <main className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-                <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
-                    {/* IMAGE */}
-                    <div className="product-image-container">
-                        <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-gray-100">
-                            <Image
-                                src={product.images[0]}
-                                alt={product.title}
-                                width={1080}
-                                height={1000}
-                                className="h-full w-full object-cover"
-                            />
-                        </div>
+            {/* Main Content */}
+            <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+                {/* IMAGE */}
+                <div>
+                    <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-surface-alt border border-border/60 shadow-lg shadow-orange-500/5">
+                        <Image
+                            src={product.images[0]}
+                            alt={product.title}
+                            width={1080}
+                            height={1000}
+                            className="h-full w-full object-cover"
+                        />
+                    </div>
+                </div>
+
+                {/* DETAILS */}
+                <div className="mt-10 lg:mt-0">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="inline-block rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                            Digital Product
+                        </span>
                     </div>
 
-                    {/* DETAILS */}
-                    <div className="mt-10 px-2 sm:mt-16 sm:px-0 lg:mt-0">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                            {product.title}
-                        </h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                        {product.title}
+                    </h1>
 
-                        <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-6">
-                            <p className="text-3xl font-bold text-gray-900">
-                                ${(product.price / 100).toFixed(2)}
-                            </p>
+                    <div className="mt-6 rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-foreground">
+                                ${product.price.toFixed(2)}
+                            </span>
+                            <span className="text-sm text-muted">
+                                one-time payment
+                            </span>
+                        </div>
+                        <div className="mt-4">
                             <AddToCartButton
                                 userId={userId}
                                 productId={productId}
                             />
                         </div>
+                        <div className="mt-4 flex items-center gap-4 text-xs text-muted">
+                            <span className="flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
+                                Instant Download
+                            </span>
+                            <span className="flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-success"></span>
+                                Lifetime Access
+                            </span>
+                        </div>
+                    </div>
 
-                        <div className="mt-10 prose prose-gray text-gray-600">
-                            <p>{product.description || "No description."}</p>
+                    <div className="mt-8">
+                        <h2 className="text-lg font-semibold text-foreground mb-3">
+                            Description
+                        </h2>
+                        <div className="prose prose-slate text-muted leading-relaxed">
+                            <p>
+                                {product.description ||
+                                    "No description available."}
+                            </p>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     );
 }

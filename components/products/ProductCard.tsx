@@ -31,9 +31,9 @@ export default async function ProductCard({
 
     return (
         <Link href={`/product/${id}`}>
-            <div className="min-w-xs group relative flex flex-1 flex-col w-full max-w-sm overflow-hidden rounded-2xl bg-black/40 backdrop-blur-3xl shadow-xl shadow-black/20 border-2 border-white/60 transition-all hover:shadow-xl">
+            <div className="group relative flex flex-col w-full overflow-hidden rounded-2xl bg-white shadow-md shadow-orange-500/5 border border-border/60 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1">
                 {/* Image Section */}
-                <div className="relative aspect-4/3 overflow-hidden border-b-2 border-white/40 rounded-2xl">
+                <div className="relative aspect-4/3 overflow-hidden bg-surface-alt">
                     <Image
                         src={imageUrl}
                         alt={title}
@@ -45,7 +45,7 @@ export default async function ProductCard({
 
                     {/* Floating Category Badge */}
                     <div className="absolute right-3 bottom-3">
-                        <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gray-800">
+                        <span className="inline-block rounded-full bg-primary/90 backdrop-blur-sm px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow-sm">
                             {category}
                         </span>
                     </div>
@@ -54,27 +54,25 @@ export default async function ProductCard({
                 {/* Content Section */}
                 <div className="flex flex-1 flex-col p-5">
                     <div className="flex-1">
-                        <div className="mb-2 flex items-center justify-between">
-                            <h3
-                                className="text-xl font-bold text-white line-clamp-1"
-                                title={title}
-                            >
-                                {title}
-                            </h3>
-                        </div>
-
-                        <p className="text-sm text-shadow-white mb-4">
-                            Instant download • Lifetime access
+                        <h3
+                            className="text-lg font-bold text-foreground line-clamp-1 mb-1"
+                            title={title}
+                        >
+                            {title}
+                        </h3>
+                        <p className="text-xs text-muted flex items-center gap-1">
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-success"></span>
+                            Instant download &bull; Lifetime access
                         </p>
                     </div>
 
                     {/* Footer: Price & Action */}
-                    <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+                    <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
                         <div className="flex flex-col">
-                            <span className="text-xs text-shadow-white">
+                            <span className="text-xs text-muted font-medium uppercase tracking-wide">
                                 Price
                             </span>
-                            <span className="text-xl font-bold text-white">
+                            <span className="text-xl font-bold text-foreground">
                                 ${price.toFixed(2)}
                             </span>
                         </div>
