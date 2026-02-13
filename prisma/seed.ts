@@ -6,6 +6,7 @@ const adapter = new PrismaPg({
 });
 
 const prisma = new PrismaClient({ adapter });
+const userId = "cmkz6mtrd000000cc89l3olus";
 
 async function main() {
     // Products
@@ -13,7 +14,7 @@ async function main() {
         data: [
             {
                 id: "prod_1",
-                sellerId: "cmkz6mtrd000000cc89l3olus",
+                sellerId: userId,
                 title: "Nexus: Ultimate SaaS Starter Kit",
                 description:
                     "Launch your startup in days. Includes Next.js 14, Stripe, and Auth.",
@@ -26,7 +27,7 @@ async function main() {
             },
             {
                 id: "prod_2",
-                sellerId: "cmkz6mtrd000000cc89l3olus",
+                sellerId: userId,
                 title: "Glassmorphism 3D Icon Pack",
                 description:
                     "A set of 80 high-resolution 3D icons rendered in Blender.",
@@ -39,7 +40,7 @@ async function main() {
             },
             {
                 id: "prod_3",
-                sellerId: "cmkz6mtrd000000cc89l3olus",
+                sellerId: userId,
                 title: "Advanced Prisma Patterns",
                 description:
                     "Deep dive into database schema design and optimizing SQL queries.",
