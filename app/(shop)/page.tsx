@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import ProductCard from "@/components/products/ProductCard";
 import ShopFilters from "@/components/shop/ShopFilters";
+import { AnimatedCard, FadeIn } from "@/components/motion/MotionWrappers";
 
 // Maps sort option strings to Prisma orderBy objects
 const sortOptions: Record<string, object> = {
@@ -47,41 +48,48 @@ export default async function MainPage({
     return (
         <div className="py-6">
             {/* Hero section */}
-            <div className="mb-10 text-center">
-                <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
-                    Discover Digital
-                    <span className="text-primary"> Products</span>
-                </h1>
-                <p className="mt-3 text-lg text-muted max-w-2xl mx-auto">
-                    Premium templates, tools, and assets — download instantly
-                    and build something amazing.
-                </p>
-            </div>
+            <FadeIn>
+                <div className="mb-10 text-center">
+                    <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
+                        Discover Digital
+                        <span className="text-primary"> Products</span>
+                    </h1>
+                    <p className="mt-3 text-lg text-muted max-w-2xl mx-auto">
+                        Premium templates, tools, and assets — download
+                        instantly and build something amazing.
+                    </p>
+                </div>
+            </FadeIn>
 
             {/* Filters */}
-            <ShopFilters categories={categories} />
+            <FadeIn delay={0.1}>
+                <ShopFilters categories={categories} />
+            </FadeIn>
 
             {/* Product grid */}
             {products.length > 0 ?
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {products.map((product) => (
-                        <ProductCard
-                            key={product.id}
-                            id={product.id}
-                            title={product.title}
-                            category={product.category}
-                            price={product.price}
-                            imageUrl={product.images[0]}
-                            addItem={true}
-                        />
+                    {products.map((product, index) => (
+                        <AnimatedCard key={product.id} index={index}>
+                            <ProductCard
+                                id={product.id}
+                                title={product.title}
+                                category={product.category}
+                                price={product.price}
+                                imageUrl={product.images[0]}
+                                addItem={true}
+                            />
+                        </AnimatedCard>
                     ))}
                 </div>
-            :   <div className="text-center py-16">
-                    <p className="text-lg text-muted">No products found</p>
-                    <p className="text-sm text-muted mt-1">
-                        Change your search or filters.
-                    </p>
-                </div>
+            :   <FadeIn delay={0.15}>
+                    <div className="text-center py-16">
+                        <p className="text-lg text-muted">No products found</p>
+                        <p className="text-sm text-muted mt-1">
+                            Change your search or filters.
+                        </p>
+                    </div>
+                </FadeIn>
             }
         </div>
     );

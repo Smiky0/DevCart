@@ -1,5 +1,4 @@
 import { ShoppingCart } from "lucide-react";
-import SearchBar from "./SearchBar";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import UserLogin from "../products/buttons/UserBtn";

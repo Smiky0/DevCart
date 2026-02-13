@@ -6,6 +6,7 @@ import {
     ShoppingBag,
     User,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -60,64 +61,117 @@ export default function UserLogin({
                         Hi, {userSession.user?.name?.split(" ")[0] || "User"}
                     </span>
                     <div className="relative" ref={dropdownRef}>
-                        <button
-                            className={`flex items-center justify-center gap-1 px-3 py-2 rounded-4xl text-white border border-primary cursor-pointer transition-all duration-200
+                        <motion.button
+                            whileTap={{ scale: 0.93 }}
+                            whileHover={{ scale: 1.04 }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 400,
+                                damping: 20,
+                            }}
+                            className={`flex items-center justify-center gap-1 px-3 py-2 rounded-4xl text-white border border-primary cursor-pointer transition-colors duration-200
                                 ${isOpen ? "bg-primary/80 shadow-md" : "bg-primary/60 hover:bg-primary/80"}`}
                             onClick={() => setIsOpen(!isOpen)}
                         >
                             <User size={18} />
-                            <ChevronDown
-                                size={14}
-                                className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-                            />
-                        </button>
+                            <motion.span
+                                animate={{ rotate: isOpen ? 180 : 0 }}
+                                transition={{
+                                    type: "spring",
+                                    stiffness: 300,
+                                    damping: 20,
+                                }}
+                                className="flex items-center"
+                            >
+                                <ChevronDown size={14} />
+                            </motion.span>
+                        </motion.button>
 
                         {/* Dropdown Menu */}
-                        {isOpen && (
-                            <div className="absolute right-0 top-full mt-2 w-52 p-1.5 bg-white border border-border/60 rounded-3xl shadow-xl shadow-orange-500/10 z-50 overflow-hidden">
-                                <div className="py-1">
-                                    <button
-                                        onClick={handleDashboard}
-                                        className="w-full text-left px-4 py-2.5 text-sm text-black/80 cursor-pointer group hover:bg-primary hover:text-white hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
-                                    >
-                                        <LayoutDashboard
-                                            size={16}
-                                            className="text-primary group-hover:text-white"
-                                        />
-                                        Dashboard
-                                    </button>
-                                    <button
-                                        onClick={handleOrders}
-                                        className="w-full text-left px-4 py-2.5 text-sm text-black/80 cursor-pointer group hover:bg-primary hover:text-white hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
-                                    >
-                                        <ShoppingBag
-                                            size={16}
-                                            className="text-primary group-hover:text-white"
-                                        />
-                                        Your Orders
-                                    </button>
+                        <AnimatePresence>
+                            {isOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.92, y: -4 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.92, y: -4 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 500,
+                                        damping: 30,
+                                        mass: 0.8,
+                                    }}
+                                    style={{ transformOrigin: "top right" }}
+                                    className="absolute right-0 top-full mt-2 w-52 p-1.5 bg-white border border-border/60 rounded-3xl shadow-xl shadow-orange-500/10 z-50 overflow-hidden"
+                                >
+                                    <div className="py-1">
+                                        {[
+                                            {
+                                                icon: LayoutDashboard,
+                                                label: "Dashboard",
+                                                onClick: handleDashboard,
+                                            },
+                                            {
+                                                icon: ShoppingBag,
+                                                label: "Your Orders",
+                                                onClick: handleOrders,
+                                            },
+                                        ].map((item, i) => (
+                                            <motion.button
+                                                key={item.label}
+                                                initial={{ opacity: 0, x: -12 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{
+                                                    delay: 0.05 * (i + 1),
+                                                    duration: 0.5,
+                                                    ease: [0.22, 1, 0.36, 1],
+                                                }}
+                                                onClick={item.onClick}
+                                                className="w-full text-left px-4 py-2.5 text-sm text-black/80 cursor-pointer group hover:bg-primary hover:text-white hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
+                                            >
+                                                <item.icon
+                                                    size={16}
+                                                    className="text-primary group-hover:text-white"
+                                                />
+                                                {item.label}
+                                            </motion.button>
+                                        ))}
 
-                                    <div className="h-px bg-border my-1 mx-2" />
+                                        <div className="h-px bg-border my-1 mx-2" />
 
-                                    <button
-                                        onClick={handleSignOut}
-                                        className="w-full px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-red-500 hover:text-white flex items-center gap-3 transition-colors rounded-2xl"
-                                    >
-                                        <LogOut size={16} />
-                                        Logout
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                                        <motion.button
+                                            initial={{ opacity: 0, x: -12 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{
+                                                delay: 0.2,
+                                                duration: 0.5,
+                                                ease: [0.22, 1, 0.36, 1],
+                                            }}
+                                            onClick={handleSignOut}
+                                            className="w-full px-4 py-2.5 text-sm text-red-600 cursor-pointer hover:bg-red-500 hover:text-white hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
+                                        >
+                                            <LogOut size={16} />
+                                            Logout
+                                        </motion.button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             :   <div className="flex justify-center items-center gap-2">
-                    <span
-                        className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-semibold transition-all duration-200 rounded-xl cursor-pointer shadow-sm hover:shadow-md"
+                    <motion.span
+                        whileHover={{ scale: 1.04 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 20,
+                        }}
+                        className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm font-semibold transition-colors duration-200 rounded-xl cursor-pointer shadow-sm hover:shadow-md"
                         onClick={handleSignIn}
                     >
                         Sign In
-                    </span>
+                    </motion.span>
                 </div>
             }
         </div>
