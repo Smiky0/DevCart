@@ -1,7 +1,7 @@
 "use client";
 
 import { addToCart } from "@/server/actions/cart";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCartSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -51,7 +51,7 @@ function AddToCartButton({
                 disabled={productAdded || loading}
                 className="flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <ShoppingCart className="h-4 w-4" />
+                <ShoppingCartSimpleIcon className="h-4 w-4" weight="duotone"/>
                 {productAdded ? "Added" : "Add to Cart"}
             </button>
         </div>

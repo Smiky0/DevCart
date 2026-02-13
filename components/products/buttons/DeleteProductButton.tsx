@@ -1,10 +1,10 @@
 "use client";
 
 import { deleteProduct } from "@/server/actions/product";
-import { Trash2, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { TrashIcon, XIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 
 export default function DeleteProductButton({
     productId,
@@ -39,10 +39,10 @@ export default function DeleteProductButton({
                     setShowModal(true);
                 }}
                 disabled={loading}
-                className="p-2 rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg text-red-400 hover:text-danger group hover:bg-red-100 transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Delete product"
             >
-                <Trash2 size={16} />
+                <TrashIcon size={18} weight="duotone" />
             </motion.button>
 
             <AnimatePresence>
@@ -84,9 +84,10 @@ export default function DeleteProductButton({
                                         delay: 0.08,
                                     }}
                                 >
-                                    <AlertTriangle
+                                    <WarningIcon
                                         className="text-danger"
-                                        size={22}
+										size={22}
+										weight="duotone"
                                     />
                                 </motion.div>
 
@@ -123,8 +124,9 @@ export default function DeleteProductButton({
                                     <button
                                         onClick={() => setShowModal(false)}
                                         disabled={loading}
-                                        className="px-4 py-2 text-sm font-medium text-foreground/80 outline outline-black/20 hover:text-foreground rounded-lg hover:bg-black/4 active:bg-black/30 transition-colors duration-200 cursor-pointer disabled:opacity-50"
+                                        className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 outline outline-black/20 hover:text-foreground rounded-lg hover:bg-black/4 active:bg-black/30 transition-colors duration-200 cursor-pointer disabled:opacity-50"
                                     >
+                                        <XIcon size={16} weight="bold" />
                                         Cancel
                                     </button>
                                     <button
@@ -143,7 +145,7 @@ export default function DeleteProductButton({
                                                 }}
                                             />
                                         )}
-                                        <Trash2 size={14} />
+                                        <TrashIcon size={16} weight="bold" />
                                         <span>
                                             {loading ? "Deleting…" : "Delete"}
                                         </span>

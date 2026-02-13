@@ -2,10 +2,10 @@ import AddToCartButton from "@/components/products/buttons/AddToCartButton";
 import { FadeIn, ScaleIn } from "@/components/motion/MotionWrappers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 
 export default async function ProductPage({
     params,
@@ -35,7 +35,7 @@ export default async function ProductPage({
                         href="/"
                         className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary transition-colors duration-200 group"
                     >
-                        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+                        <ArrowLeftIcon className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
                         Back to Marketplace
                     </Link>
                 </div>

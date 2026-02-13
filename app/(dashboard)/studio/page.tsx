@@ -1,7 +1,7 @@
 import ProductCardDashboard from "@/components/products/ProductCardDashboard";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -55,7 +55,7 @@ export default async function ListedProducts() {
                     href="/studio/products/new"
                     className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 shadow-sm hover:shadow-md"
                 >
-                    <Plus size={18} />
+                    <PlusIcon size={18} />
                     New Product
                 </Link>
             </div>

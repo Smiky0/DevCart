@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 export default function ShopFilters({ categories }: { categories: string[] }) {
     const router = useRouter();
@@ -40,7 +40,7 @@ export default function ShopFilters({ categories }: { categories: string[] }) {
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center mb-8">
             {/* Search */}
             <div className="flex items-center flex-1 min-w-50 rounded-xl border border-border bg-white hover:border-primary/40 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all duration-200 px-3 py-2">
-                <Search size={16} className="text-muted shrink-0" />
+                <MagnifyingGlassIcon size={16} className="text-muted shrink-0" />
                 <input
                     className="w-full px-2 text-sm text-foreground placeholder:text-muted bg-transparent border-none outline-none"
                     type="text"

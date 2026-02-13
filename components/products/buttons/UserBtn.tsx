@@ -1,11 +1,5 @@
 "use client";
-import {
-    ChevronDown,
-    LayoutDashboard,
-    LogOut,
-    ShoppingBag,
-    User,
-} from "lucide-react";
+import { CaretDownIcon, LayoutIcon, ShoppingBagIcon, SignOutIcon, UserIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
@@ -73,7 +67,7 @@ export default function UserLogin({
                                 ${isOpen ? "bg-primary/80 shadow-md" : "bg-primary/60 hover:bg-primary/80"}`}
                             onClick={() => setIsOpen(!isOpen)}
                         >
-                            <User size={18} />
+                            <UserIcon size={18} weight="duotone" />
                             <motion.span
                                 animate={{ rotate: isOpen ? 180 : 0 }}
                                 transition={{
@@ -83,7 +77,7 @@ export default function UserLogin({
                                 }}
                                 className="flex items-center"
                             >
-                                <ChevronDown size={14} />
+                                <CaretDownIcon size={14} weight="duotone"/>
                             </motion.span>
                         </motion.button>
 
@@ -106,12 +100,12 @@ export default function UserLogin({
                                     <div className="py-1">
                                         {[
                                             {
-                                                icon: LayoutDashboard,
+                                                icon: LayoutIcon,
                                                 label: "Dashboard",
                                                 onClick: handleDashboard,
                                             },
                                             {
-                                                icon: ShoppingBag,
+                                                icon: ShoppingBagIcon,
                                                 label: "Your Orders",
                                                 onClick: handleOrders,
                                             },
@@ -129,7 +123,8 @@ export default function UserLogin({
                                                 className="w-full text-left px-4 py-2.5 text-sm text-black/80 cursor-pointer group hover:bg-primary hover:text-white hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
                                             >
                                                 <item.icon
-                                                    size={16}
+													size={16}
+													weight="bold"
                                                     className="text-primary group-hover:text-white"
                                                 />
                                                 {item.label}
@@ -149,7 +144,7 @@ export default function UserLogin({
                                             onClick={handleSignOut}
                                             className="w-full px-4 py-2.5 text-sm text-red-600 cursor-pointer hover:bg-red-500 hover:text-white hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
                                         >
-                                            <LogOut size={16} />
+                                            <SignOutIcon size={16} weight="bold"/>
                                             Logout
                                         </motion.button>
                                     </div>

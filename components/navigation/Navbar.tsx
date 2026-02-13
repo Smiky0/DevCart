@@ -1,7 +1,7 @@
-import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import UserLogin from "../products/buttons/UserBtn";
+import { ShoppingCartSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 
 export default async function Navbar() {
     const session = await auth();
@@ -30,11 +30,10 @@ export default async function Navbar() {
                             href="/cart"
                             className="flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/60 hover:bg-primary/80 text-white transition-all duration-200 hover:scale-105"
                         >
-                            <ShoppingCart size={20} />
+                            <ShoppingCartSimpleIcon size={20} weight="bold"/>
                         </Link>
                     </div>
                 </div>
-
             </div>
         </header>
     );

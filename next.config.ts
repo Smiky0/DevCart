@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+    // optimize for phospohorus icon to load only modules that are used
+    experimental: {
+        optimizePackageImports: ["@phosphor-icons/react"],
+    },
 };
 
 export default nextConfig;

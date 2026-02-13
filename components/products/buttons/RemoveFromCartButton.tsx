@@ -1,7 +1,7 @@
 "use client";
 
 import { removeFromCart } from "@/server/actions/cart";
-import { ShoppingCart } from "lucide-react";
+import {  ShoppingCartSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -44,7 +44,7 @@ function RemoveFromCart({
                 disabled={loading}
                 className="flex items-center gap-2 rounded-xl bg-danger/10 border border-danger/20 text-danger px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95 hover:bg-danger hover:text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <ShoppingCart className="h-4 w-4" />
+                <ShoppingCartSimpleIcon className="h-4 w-4" weight="duotone"/>
                 {"Remove"}
             </button>
         </div>
