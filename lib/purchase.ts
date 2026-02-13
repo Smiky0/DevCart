@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { auth } from "./auth";
 import prisma from "./prisma";
 
@@ -54,6 +55,7 @@ export async function processOrder() {
             });
             return purchase;
         });
+        revalidatePath("/cart");
         return { sucess: true, purchaseId: transaction.id };
     } catch (err) {
         console.error("Transaction failed", err);
