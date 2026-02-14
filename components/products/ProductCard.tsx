@@ -51,7 +51,7 @@ export default async function ProductCard({
                     </div>
 
                     {/* Bottom gradient fade into dark content area */}
-                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-surface via-surface/40 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-1/4 backdrop-blur-sm backdrop-opacity-40 bg-linear-to-t from-surface via-surface/40 to-transparent" />
                 </div>
 
                 {/* Content Section — dark bottom panel */}

@@ -9,6 +9,7 @@ interface ProductCardDashboardProps {
     category: string;
     price: number;
     soldItems: number;
+    totalProfit: number;
 }
 
 function ProductCardDashboard({
@@ -18,9 +19,10 @@ function ProductCardDashboard({
     category,
     price,
     soldItems,
+    totalProfit,
 }: ProductCardDashboardProps) {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-center px-6 py-4 hover:bg-primary/5 transition-colors duration-150">
+        <div className="grid grid-cols-1 sm:grid-cols-14 gap-2 sm:gap-4 items-center px-6 py-4 hover:bg-primary/5 transition-colors duration-150">
             {/* Product info */}
             <Link
                 href={`/product/${id}`}
@@ -49,7 +51,7 @@ function ProductCardDashboard({
             </Link>
 
             {/* Category */}
-            <div className="sm:col-span-3">
+            <div className="sm:col-span-2">
                 <span className="inline-block rounded-full bg-primary/10 text-primary px-2.5 py-0.5 text-xs font-medium">
                     {category}
                 </span>
@@ -65,6 +67,15 @@ function ProductCardDashboard({
             {/* Sold count */}
             <div className="sm:col-span-2 text-right">
                 <span className="text-sm text-muted">{soldItems} sold</span>
+            </div>
+
+            {/* Total Profit */}
+            <div className="sm:col-span-3 text-right">
+                <span
+                    className={`text-sm font-semibold ${totalProfit > 0 ? "text-success" : "text-muted"}`}
+                >
+                    ${totalProfit.toFixed(2)}
+                </span>
             </div>
 
             {/* Delete */}

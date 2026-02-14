@@ -33,7 +33,7 @@ export default async function ProductPage({
                 <div className="mb-8">
                     <Link
                         href="/"
-                        className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary transition-colors duration-200 group"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-200 group"
                     >
                         <ArrowLeftIcon className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
                         Back to Marketplace
