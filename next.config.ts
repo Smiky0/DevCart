@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
     // optimize for phospohorus icon to load only modules that are used
     experimental: {
         optimizePackageImports: ["@phosphor-icons/react"],
+        serverActions: {
+            bodySizeLimit: "10mb",
+        },
     },
 };
 

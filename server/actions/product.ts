@@ -83,16 +83,33 @@ export async function addProduct(formData: FormData) {
     const description = formData.get("description") as string;
     const priceStr = formData.get("price") as string;
     const category = formData.get("category") as string;
-    const imageUrl = formData.get("imageUrl") as string;
+    const imagesJson = formData.get("images") as string | null;
 
     // File asset fields (optional)
     const fileName = formData.get("fileName") as string | null;
     const fileSizeStr = formData.get("fileSize") as string | null;
     const storageKey = formData.get("storageKey") as string | null;
 
+    // Parse images array
+    let images: string[] = [];
+    try {
+        images = imagesJson ? JSON.parse(imagesJson) : [];
+    } catch {
+        return { success: false, message: "Invalid image data." };
+    }
+
     // Validation
-    if (!title || !description || !priceStr || !category || !imageUrl) {
-        return { success: false, message: "All fields are required." };
+    if (
+        !title ||
+        !description ||
+        !priceStr ||
+        !category ||
+        images.length === 0
+    ) {
+        return {
+            success: false,
+            message: "All fields are required (including at least one image).",
+        };
     }
 
     const price = parseFloat(priceStr);
@@ -108,7 +125,7 @@ export async function addProduct(formData: FormData) {
                 description,
                 price,
                 category,
-                images: [imageUrl],
+                images,
                 isPublished: true,
                 // Create the file asset if one was uploaded
                 ...(fileName && storageKey && fileSizeStr ?

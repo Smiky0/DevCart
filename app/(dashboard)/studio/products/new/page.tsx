@@ -38,7 +38,10 @@ function formatFileSize(bytes: number) {
 export default function NewProductPage() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const [imagePreview, setImagePreview] = useState<string>("");
+
+    // Cover images state (stored as base64 data URLs)
+    const [coverImages, setCoverImages] = useState<string[]>([]);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
 
     // File asset state
     const [fileAsset, setFileAsset] = useState<{
@@ -48,6 +51,31 @@ export default function NewProductPage() {
     } | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
+
+    const handleImageUpload = useCallback(async (files: FileList | File[]) => {
+        setIsUploadingImage(true);
+        try {
+            for (const file of Array.from(files)) {
+                if (!file.type.startsWith("image/")) {
+                    toast.error(`"${file.name}" is not an image`);
+                    continue;
+                }
+                const formData = new FormData();
+                formData.append("file", file);
+                const res = await fetch("/api/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+                if (!res.ok) throw new Error("Upload failed");
+                const data = await res.json();
+                setCoverImages((prev) => [...prev, data.storageKey]);
+            }
+        } catch {
+            toast.error("Failed to upload image(s)");
+        } finally {
+            setIsUploadingImage(false);
+        }
+    }, []);
 
     const handleFileUpload = useCallback(async (file: File) => {
         setIsUploading(true);
@@ -93,7 +121,16 @@ export default function NewProductPage() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (coverImages.length === 0) {
+            toast.error("Please upload at least one cover image.");
+            return;
+        }
+
         const formData = new FormData(e.currentTarget);
+
+        // Append cover images as JSON
+        formData.append("images", JSON.stringify(coverImages));
 
         // Append file asset data as hidden fields
         if (fileAsset) {
@@ -334,46 +371,98 @@ export default function NewProductPage() {
                         </div>
                     </div>
 
-                    {/* Right Column — Image & Actions */}
+                    {/* Right Column — Images & Actions */}
                     <div className="space-y-6">
-                        {/* Image Card */}
+                        {/* Cover Images Card */}
                         <div className="bg-surface border border-border/60 rounded-2xl shadow-sm p-6 space-y-4">
                             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
                                 <ImageIcon size={18} className="text-primary" />
-                                Cover Image
+                                Cover Images
                             </h2>
-                            <input
-                                id="imageUrl"
-                                name="imageUrl"
-                                type="url"
-                                required
-                                placeholder="https://example.com/image.png"
-                                onChange={(e) =>
-                                    setImagePreview(e.target.value)
-                                }
-                                className="w-full rounded-xl border border-border/60 bg-surface-alt/50 px-4 py-3 text-sm text-foreground placeholder:text-muted/60 outline-none transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                            />
+                            <p className="text-xs text-muted">
+                                Upload one or more images. The first image will
+                                be used as the thumbnail.
+                            </p>
 
-                            {/* Image Preview */}
-                            {imagePreview ?
-                                <div className="relative aspect-4/3 w-full rounded-xl overflow-hidden border border-border/60 bg-surface-alt">
-                                    <Image
-                                        src={imagePreview}
-                                        alt="Preview"
-                                        fill
-                                        unoptimized
-                                        className="object-cover"
-                                        onError={() => setImagePreview("")}
-                                    />
+                            {/* Upload zone */}
+                            <div className="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/60 hover:border-primary/40 hover:bg-surface-alt/40 py-8 px-4 transition-all duration-200 cursor-pointer">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={(e) => {
+                                        if (
+                                            e.target.files &&
+                                            e.target.files.length > 0
+                                        ) {
+                                            handleImageUpload(e.target.files);
+                                        }
+                                    }}
+                                    disabled={isUploadingImage}
+                                />
+                                {isUploadingImage ?
+                                    <>
+                                        <span className="h-7 w-7 border-3 border-primary/30 border-t-primary rounded-full animate-spin mb-2" />
+                                        <p className="text-sm font-medium text-foreground">
+                                            Uploading...
+                                        </p>
+                                    </>
+                                :   <>
+                                        <Upload
+                                            size={24}
+                                            className="text-muted mb-2"
+                                        />
+                                        <p className="text-sm font-medium text-foreground">
+                                            Drop images or{" "}
+                                            <span className="text-primary">
+                                                browse
+                                            </span>
+                                        </p>
+                                        <p className="text-xs text-muted mt-0.5">
+                                            PNG, JPG, WEBP, SVG
+                                        </p>
+                                    </>
+                                }
+                            </div>
+
+                            {/* Image previews grid */}
+                            {coverImages.length > 0 && (
+                                <div className="grid grid-cols-2 gap-2">
+                                    {coverImages.map((img, i) => (
+                                        <div
+                                            key={i}
+                                            className="relative group/img aspect-4/3 rounded-lg overflow-hidden border border-border/60 bg-surface-alt"
+                                        >
+                                            <Image
+                                                src={img}
+                                                alt={`Cover ${i + 1}`}
+                                                fill
+                                                unoptimized
+                                                className="object-cover"
+                                            />
+                                            {i === 0 && (
+                                                <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-primary text-white text-[10px] font-bold uppercase">
+                                                    Thumbnail
+                                                </span>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setCoverImages((prev) =>
+                                                        prev.filter(
+                                                            (_, j) => j !== i,
+                                                        ),
+                                                    )
+                                                }
+                                                className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity cursor-pointer hover:bg-danger"
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                    ))}
                                 </div>
-                            :   <div className="flex flex-col items-center justify-center aspect-4/3 w-full rounded-xl border-2 border-dashed border-border/60 bg-surface-alt/30 text-muted">
-                                    <ImageIcon
-                                        size={32}
-                                        className="mb-2 opacity-40"
-                                    />
-                                    <p className="text-xs">Image preview</p>
-                                </div>
-                            }
+                            )}
                         </div>
 
                         {/* Actions Card */}

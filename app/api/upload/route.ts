@@ -1,5 +1,10 @@
 import { auth } from "@/lib/auth";
+import { randomUUID } from "crypto";
+import { mkdir, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
+import path from "path";
+
+const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 
 export async function POST(req: NextRequest) {
     const session = await auth();
@@ -21,16 +26,27 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Convert file to base64 for DB storage
+        // Ensure upload directory exists
+        await mkdir(UPLOAD_DIR, { recursive: true });
+
+        // Generate a unique filename: uuid + original extension
+        const ext = path.extname(file.name) || "";
+        const assetId = randomUUID();
+        const fileName = `${assetId}${ext}`;
+        const filePath = path.join(UPLOAD_DIR, fileName);
+
+        // Write file to disk
         const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const base64 = buffer.toString("base64");
-        const dataUrl = `data:${file.type || "application/octet-stream"};base64,${base64}`;
+        await writeFile(filePath, Buffer.from(bytes));
+
+        // Return a public URL path (served from /public)
+        const publicUrl = `/uploads/${fileName}`;
 
         return NextResponse.json({
-            storageKey: dataUrl,
+            storageKey: publicUrl,
             fileName: file.name,
             fileSize: file.size,
+            assetId,
         });
     } catch {
         return NextResponse.json({ error: "Upload failed" }, { status: 500 });
