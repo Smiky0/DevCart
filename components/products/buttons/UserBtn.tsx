@@ -105,7 +105,7 @@ export default function UserLogin({
                                             },
                                             {
                                                 icon: ShoppingBagIcon,
-                                                label: "Your Orders",
+                                                label: "Purchases",
                                                 onClick: handleOrders,
                                             },
                                         ].map((item, i) => (
