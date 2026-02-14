@@ -31,9 +31,9 @@ export default async function ProductCard({
 
     return (
         <Link href={`/product/${id}`}>
-            <div className="group relative flex flex-col w-full overflow-hidden rounded-2xl bg-white shadow-md shadow-orange-500/5 border border-border/60 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1">
-                {/* Image Section */}
-                <div className="relative aspect-4/3 overflow-hidden bg-surface-alt">
+            <div className="group relative flex flex-col w-full overflow-hidden rounded-3xl border border-border bg-surface shadow-lg shadow-foreground/20 transition-all duration-300 hover:shadow-xl hover:shadow-foreground/30 hover:-translate-y-1">
+                {/* Image Section with gradient overlay */}
+                <div className="relative aspect-4/3 overflow-hidden">
                     <Image
                         src={imageUrl}
                         alt={title}
@@ -43,39 +43,36 @@ export default async function ProductCard({
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
 
-                    {/* Floating Category Badge */}
-                    <div className="absolute right-3 bottom-3">
-                        <span className="inline-block rounded-full bg-primary/90 backdrop-blur-sm px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white shadow-sm">
+                    {/* Top-left category label */}
+                    <div className="absolute flex justify-center items-center top-4 left-5 rounded-full backdrop-blur-sm border-border bg-primary/40 px-3 py-1">
+                        <span className="text-xs font-medium tracking-wide text-surface/95">
                             {category}
                         </span>
                     </div>
+
+                    {/* Bottom gradient fade into dark content area */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-surface via-surface/40 to-transparent" />
                 </div>
 
-                {/* Content Section */}
-                <div className="flex flex-1 flex-col p-5">
-                    <div className="flex-1">
+                {/* Content Section — dark bottom panel */}
+                <div className="flex flex-1 flex-col px-5 pt-1 pb-5 bg-surface">
+                    <div className="flex-1 mb-3">
                         <h3
-                            className="text-lg font-bold text-foreground line-clamp-1 mb-1"
+                            className="text-xl font-semibold text-foreground leading-tight line-clamp-2 tracking-tight"
                             title={title}
                         >
                             {title}
                         </h3>
-                        <p className="text-xs text-muted flex items-center gap-1">
-                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-success"></span>
-                            Instant download &bull; Lifetime access
+                        <p className="text-xs text-foreground/70 mt-1.5 font-light">
+                            Instant download &middot; Lifetime access
                         </p>
                     </div>
 
                     {/* Footer: Price & Action */}
-                    <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                        <div className="flex flex-col">
-                            <span className="text-xs text-muted font-medium uppercase tracking-wide">
-                                Price
-                            </span>
-                            <span className="text-xl font-bold text-foreground">
-                                ${price.toFixed(2)}
-                            </span>
-                        </div>
+                    <div className="flex items-center justify-between pt-3 border-t border-foreground/10">
+                        <span className="text-lg font-semibold text-foreground tracking-tight">
+                            ${price.toFixed(2)}
+                        </span>
                         {!addItem && cartItemId ?
                             <RemoveFromCart
                                 userId={userId}

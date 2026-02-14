@@ -48,7 +48,7 @@ export default function DeleteProductButton({
             <AnimatePresence>
                 {showModal && (
                     <motion.div
-                        className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50"
+                        className="fixed inset-0 flex items-center justify-center bg-foreground/30 backdrop-blur-sm z-50"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -56,7 +56,7 @@ export default function DeleteProductButton({
                         onClick={() => !loading && setShowModal(false)}
                     >
                         <motion.div
-                            className="bg-white rounded-2xl w-full max-w-95 mx-4 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.2)] border border-border/40 overflow-hidden"
+                            className="bg-surface rounded-2xl w-full max-w-95 mx-4 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.2)] border border-border/40 overflow-hidden"
                             initial={{ opacity: 0, scale: 0.95, y: 12 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.97, y: 8 }}
@@ -86,8 +86,8 @@ export default function DeleteProductButton({
                                 >
                                     <WarningIcon
                                         className="text-danger"
-										size={22}
-										weight="duotone"
+                                        size={22}
+                                        weight="duotone"
                                     />
                                 </motion.div>
 
@@ -124,7 +124,7 @@ export default function DeleteProductButton({
                                     <button
                                         onClick={() => setShowModal(false)}
                                         disabled={loading}
-                                        className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 outline outline-black/20 hover:text-foreground rounded-lg hover:bg-black/4 active:bg-black/30 transition-colors duration-200 cursor-pointer disabled:opacity-50"
+                                        className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 outline outline-foreground/20 hover:text-foreground rounded-lg hover:bg-foreground/4 active:bg-foreground/30 transition-colors duration-200 cursor-pointer disabled:opacity-50"
                                     >
                                         <XIcon size={16} weight="bold" />
                                         Cancel
@@ -132,11 +132,11 @@ export default function DeleteProductButton({
                                     <button
                                         onClick={handleDelete}
                                         disabled={loading}
-                                        className="relative px-4 py-2 text-sm font-medium text-white bg-danger rounded-lg hover:brightness-110 active:brightness-95 transition-all duration-200 cursor-pointer disabled:cursor-not-allowed overflow-hidden flex items-center gap-2"
+                                        className="relative px-4 py-2 text-sm font-medium text-surface bg-danger rounded-lg hover:brightness-110 active:brightness-95 transition-all duration-200 cursor-pointer disabled:cursor-not-allowed overflow-hidden flex items-center gap-2"
                                     >
                                         {loading && (
                                             <motion.span
-                                                className="absolute inset-0 bg-white/10"
+                                                className="absolute inset-0 bg-surface/10"
                                                 animate={{ x: ["0%", "100%"] }}
                                                 transition={{
                                                     repeat: Infinity,

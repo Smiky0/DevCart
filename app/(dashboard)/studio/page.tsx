@@ -53,16 +53,16 @@ export default async function ListedProducts() {
                 </div>
                 <Link
                     href="/studio/products/new"
-                    className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="inline-flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-5 py-2.5 text-sm font-semibold text-surface transition-all duration-200 shadow-sm hover:shadow-md"
                 >
-                    <PlusIcon size={18} />
+                    <PlusIcon size={18} weight="bold"/>
                     New Product
                 </Link>
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white border font-semibold border-border/60 rounded-2xl p-6 shadow-sm">
+                <div className="bg-surface border font-semibold border-border/60 rounded-2xl p-6 shadow-sm">
                     <p className="text-sm font-semibold text-muted uppercase tracking-wide mb-1">
                         Items Sold
                     </p>
@@ -70,7 +70,7 @@ export default async function ListedProducts() {
                         {totalItemsSold}
                     </p>
                 </div>
-                <div className="bg-white border border-border/60 rounded-2xl p-6 shadow-sm">
+                <div className="bg-surface border border-border/60 rounded-2xl p-6 shadow-sm">
                     <p className="text-sm font-semibold text-muted uppercase tracking-wide mb-1">
                         Revenue
                     </p>
@@ -78,7 +78,7 @@ export default async function ListedProducts() {
                         ${totalRevenue.toFixed(2)}
                     </p>
                 </div>
-                <div className="bg-white border border-border/60 rounded-2xl p-6 shadow-sm">
+                <div className="bg-surface border border-border/60 rounded-2xl p-6 shadow-sm">
                     <p className="text-sm font-semibold text-muted uppercase tracking-wide mb-1">
                         Products Sold
                     </p>
@@ -89,7 +89,7 @@ export default async function ListedProducts() {
             </div>
 
             {/* Sold Products Table */}
-            <div className="bg-white border border-border/60 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-surface border border-border/60 rounded-2xl shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-border/60">
                     <h2 className="text-lg font-semibold text-foreground">
                         Sold Products

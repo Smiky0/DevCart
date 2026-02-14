@@ -39,10 +39,13 @@ export default function ShopFilters({ categories }: { categories: string[] }) {
     return (
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center mb-8">
             {/* Search */}
-            <div className="flex items-center flex-1 min-w-50 rounded-xl border border-border bg-white hover:border-primary/40 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all duration-200 px-3 py-2">
-                <MagnifyingGlassIcon size={16} className="text-muted shrink-0" />
+            <div className="flex items-center flex-1 min-w-50 rounded-2xl border border-border bg-surface hover:border-primary/40 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all duration-200 px-4 py-2.5">
+                <MagnifyingGlassIcon
+                    size={16}
+                    className="text-muted shrink-0"
+                />
                 <input
-                    className="w-full px-2 text-sm text-foreground placeholder:text-muted bg-transparent border-none outline-none"
+                    className="w-full px-2 text-sm text-primary font-medium placeholder:text-muted bg-transparent border-none outline-none"
                     type="text"
                     placeholder="Search by title or category..."
                     value={search}
@@ -54,7 +57,7 @@ export default function ShopFilters({ categories }: { categories: string[] }) {
             <select
                 defaultValue={searchParams.get("category") ?? ""}
                 onChange={(e) => updateParams("category", e.target.value)}
-                className="rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground cursor-pointer hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all duration-200"
+                className="rounded-2xl border border-border bg-surface px-3 py-2.5 text-sm text-foreground cursor-pointer hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all duration-200"
             >
                 <option value="">All Categories</option>
                 {categories.map((cat) => (
@@ -68,7 +71,7 @@ export default function ShopFilters({ categories }: { categories: string[] }) {
             <select
                 defaultValue={searchParams.get("sort") ?? ""}
                 onChange={(e) => updateParams("sort", e.target.value)}
-                className="rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground cursor-pointer hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all duration-200"
+                className="rounded-2xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground cursor-pointer hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all duration-200"
             >
                 <option value="">Sort by</option>
                 <option value="title-asc">Title: A → Z</option>

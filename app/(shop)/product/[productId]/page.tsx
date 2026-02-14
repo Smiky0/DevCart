@@ -45,7 +45,7 @@ export default async function ProductPage({
             <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
                 {/* IMAGE */}
                 <ScaleIn delay={0.1}>
-                    <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-surface-alt border border-border/60 shadow-lg shadow-orange-500/5">
+                    <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-surface-alt border border-border/60 shadow-lg shadow-foreground/15">
                         <Image
                             src={product.images[0]}
                             alt={product.title}
@@ -71,7 +71,7 @@ export default async function ProductPage({
                     </FadeIn>
 
                     <FadeIn delay={0.25} direction="right">
-                        <div className="mt-6 rounded-2xl border border-border/60 bg-white p-6 shadow-sm">
+                        <div className="mt-6 rounded-2xl border border-border/60 bg-surface p-6 shadow-sm">
                             <div className="flex items-baseline gap-2">
                                 <span className="text-3xl font-bold text-foreground">
                                     ${product.price.toFixed(2)}

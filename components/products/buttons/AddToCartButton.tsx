@@ -49,9 +49,9 @@ function AddToCartButton({
             <button
                 onClick={handleOnClick}
                 disabled={productAdded || loading}
-                className="flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-4 py-2.5 text-sm font-semibold text-surface transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <ShoppingCartSimpleIcon className="h-4 w-4" weight="duotone"/>
+                <ShoppingCartSimpleIcon className="h-4 w-4" weight="duotone" />
                 {productAdded ? "Added" : "Add to Cart"}
             </button>
         </div>

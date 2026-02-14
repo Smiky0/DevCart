@@ -9,6 +9,10 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {
+    CaretDoubleLeftIcon,
+    ShoppingCartIcon,
+} from "@phosphor-icons/react/dist/ssr";
 
 export default async function ItemsPage() {
     // get the userid from userauth
@@ -40,15 +44,15 @@ export default async function ItemsPage() {
             </FadeIn>
             {cartItems.length ?
                 <FadeIn delay={0.1}>
-                    <div className="flex flex-col md:flex-row gap-3 items-center justify-between w-full bg-white border border-border/60 rounded-2xl px-6 py-4 shadow-sm mb-8">
+                    <div className="flex flex-col md:flex-row gap-3 items-center justify-between w-full bg-surface border border-border/60 rounded-2xl px-6 py-4 shadow-sm mb-8">
                         <div className="flex items-center gap-6 text-sm font-medium text-foreground">
                             <span className="flex items-center gap-2">
                                 <PopIn delay={0.2}>
-                                    <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+                                    <span className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
                                         {cartItems.length}
                                     </span>
                                 </PopIn>
-                                items
+                                item(s)
                             </span>
                             <PopIn delay={0.25}>
                                 <span className="text-2xl font-bold text-foreground">
@@ -63,7 +67,11 @@ export default async function ItemsPage() {
                     <div className="text-center py-16">
                         <PopIn delay={0.15}>
                             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                                <span className="text-3xl">🛒</span>
+                                <ShoppingCartIcon
+                                    weight="duotone"
+                                    size={40}
+                                    className="text-primary-light"
+                                />
                             </div>
                         </PopIn>
                         <p className="text-lg text-muted mb-2">
@@ -71,9 +79,12 @@ export default async function ItemsPage() {
                         </p>
                         <Link
                             href={"/"}
-                            className="text-primary font-medium hover:text-primary-dark transition-colors"
+                            className="flex items-center justify-center gap-2 text-primary font-medium hover:text-primary-dark transition-colors"
                         >
-                            Browse products →
+                            <CaretDoubleLeftIcon />
+                            <span className="leading-none pb-px">
+                                Browse products
+                            </span>
                         </Link>
                     </div>
                 </FadeIn>
