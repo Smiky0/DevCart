@@ -16,7 +16,11 @@ export default async function page() {
         include: {
             items: {
                 include: {
-                    product: true,
+                    product: {
+                        include: {
+                            fileAsset: true,
+                        },
+                    },
                 },
             },
         },
@@ -24,7 +28,7 @@ export default async function page() {
     return (
         <div className="py-6 animate-fade-in-up">
             <h1 className="text-3xl font-bold text-foreground mb-6">
-                Your Orders
+                Purchases
             </h1>
             {orders.length === 0 ?
                 <div className="text-center py-16">
@@ -38,12 +42,15 @@ export default async function page() {
                         order.items.map((item) => (
                             <ProductCard
                                 key={item.id}
-                                id={item.id}
+                                id={item.product.id}
                                 title={item.product.title}
                                 category={item.product.category}
                                 price={item.price}
                                 imageUrl={item.product.images[0]}
-                                addItem={true}
+                                addItem={false}
+                                isPurchased={true}
+                                fileAssetId={item.product.fileAsset?.id}
+                                fileAssetName={item.product.fileAsset?.fileName}
                             />
                         )),
                     )}

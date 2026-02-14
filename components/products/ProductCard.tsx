@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import AddToCartButton from "./buttons/AddToCartButton";
 import RemoveFromCart from "./buttons/RemoveFromCartButton";
+import DownloadAssetButton from "./buttons/DownloadAssetButton";
 import { auth } from "@/lib/auth";
 
 interface ProductCardProps {
@@ -13,6 +14,9 @@ interface ProductCardProps {
     imageUrl: string;
     cartItemId?: string;
     addItem: boolean;
+    isPurchased?: boolean;
+    fileAssetId?: string;
+    fileAssetName?: string;
 }
 
 export default async function ProductCard({
@@ -23,6 +27,9 @@ export default async function ProductCard({
     imageUrl,
     cartItemId,
     addItem,
+    isPurchased,
+    fileAssetId,
+    fileAssetName,
 }: ProductCardProps) {
     // if logged in pass the userID
     // else will be asked when add to cart is called
@@ -73,7 +80,12 @@ export default async function ProductCard({
                         <span className="text-lg font-semibold text-foreground tracking-tight">
                             ${price.toFixed(2)}
                         </span>
-                        {!addItem && cartItemId ?
+                        {fileAssetId || isPurchased ?
+                            <DownloadAssetButton
+                                assetId={fileAssetId}
+                                fileName={fileAssetName}
+                            />
+                        : !addItem && cartItemId ?
                             <RemoveFromCart
                                 userId={userId}
                                 cartItemId={cartItemId}
