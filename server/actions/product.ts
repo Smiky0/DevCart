@@ -72,6 +72,70 @@ export async function deleteProduct(productId: string) {
 }
 
 // add product from user dashboard
-export async function addProduct() {
-	
+export async function addProduct(formData: FormData) {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) {
+        return { success: false, message: "Not authenticated." };
+    }
+
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const priceStr = formData.get("price") as string;
+    const category = formData.get("category") as string;
+    const imageUrl = formData.get("imageUrl") as string;
+
+    // File asset fields (optional)
+    const fileName = formData.get("fileName") as string | null;
+    const fileSizeStr = formData.get("fileSize") as string | null;
+    const storageKey = formData.get("storageKey") as string | null;
+
+    // Validation
+    if (!title || !description || !priceStr || !category || !imageUrl) {
+        return { success: false, message: "All fields are required." };
+    }
+
+    const price = parseFloat(priceStr);
+    if (isNaN(price) || price <= 0) {
+        return { success: false, message: "Price must be a positive number." };
+    }
+
+    try {
+        const product = await prisma.product.create({
+            data: {
+                sellerId: userId,
+                title,
+                description,
+                price,
+                category,
+                images: [imageUrl],
+                isPublished: true,
+                // Create the file asset if one was uploaded
+                ...(fileName && storageKey && fileSizeStr ?
+                    {
+                        fileAsset: {
+                            create: {
+                                fileName,
+                                fileSize: parseInt(fileSizeStr, 10),
+                                storageKey,
+                            },
+                        },
+                    }
+                :   {}),
+            },
+        });
+
+        revalidatePath("/studio");
+        revalidatePath("/");
+        return {
+            success: true,
+            message: "Product created successfully!",
+            productId: product.id,
+        };
+    } catch (err) {
+        return {
+            success: false,
+            message: "Failed to create product. Error: " + err,
+        };
+    }
 }
