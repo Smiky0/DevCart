@@ -1,8 +1,8 @@
 import AddToCartButton from "@/components/products/buttons/AddToCartButton";
+import ImageCarousel from "@/components/products/ImageCarousel";
 import { FadeIn, ScaleIn } from "@/components/motion/MotionWrappers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
@@ -45,15 +45,10 @@ export default async function ProductPage({
             <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
                 {/* IMAGE */}
                 <ScaleIn delay={0.1}>
-                    <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-surface-alt border border-border/60 shadow-lg shadow-foreground/15">
-                        <Image
-                            src={product.images[0]}
-                            alt={product.title}
-                            width={1080}
-                            height={1000}
-                            className="h-full w-full object-cover"
-                        />
-                    </div>
+                    <ImageCarousel
+                        images={product.images}
+                        alt={product.title}
+                    />
                 </ScaleIn>
 
                 {/* DETAILS */}
