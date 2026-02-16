@@ -157,12 +157,15 @@ export default function UserLogin({
                 </div>
             :   <div className="flex justify-center items-center gap-2">
                     <motion.span
-                        whileHover={{ scale: 1.04 }}
-                        whileTap={{ scale: 0.95 }}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{
-                            type: "spring",
-                            stiffness: 400,
-                            damping: 20,
+                            duration: 0.4,
+                            scale: {
+                                type: "spring",
+                                visualDuration: 0.4,
+                                bounce: 0.5,
+                            },
                         }}
                         className="px-4 py-2 bg-primary hover:bg-primary-dark text-surface text-sm font-semibold transition-colors duration-200 rounded-xl cursor-pointer shadow-sm hover:shadow-md"
                         onClick={handleSignIn}

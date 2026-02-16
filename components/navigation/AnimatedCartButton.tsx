@@ -34,7 +34,7 @@ export default function AnimatedCartButton() {
     return (
         <button
             onClick={handleClick}
-            className="flex items-center justify-center px-4 py-2 rounded-4xl bg-primary/80 hover:bg-primary text-surface cursor-pointer transition-colors duration-200"
+            className="flex items-center justify-center px-4 py-2 rounded-4xl bg-primary hover:bg-primary-dark text-surface cursor-pointer transition-colors duration-200"
         >
             <motion.span
                 animate={controls}
