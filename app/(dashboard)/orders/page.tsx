@@ -1,6 +1,7 @@
 import ProductCard from "@/components/products/ProductCard";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { PackageIcon } from "@phosphor-icons/react/dist/ssr";
 import { redirect } from "next/navigation";
 
 export default async function page() {
@@ -28,12 +29,14 @@ export default async function page() {
     return (
         <div className="py-6 animate-fade-in-up">
             <h1 className="text-3xl font-bold text-foreground mb-6">
-                Purchases
+                Your Orders
             </h1>
             {orders.length === 0 ?
                 <div className="text-center py-16">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="text-3xl">📦</span>
+                        <span className="text-3xl">
+                            <PackageIcon size={40} weight="duotone"/>
+                        </span>
                     </div>
                     <p className="text-lg text-muted">No orders yet</p>
                 </div>

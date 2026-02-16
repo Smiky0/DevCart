@@ -1,7 +1,7 @@
 "use client";
 
+import { ShoppingCartSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { motion, useAnimation } from "framer-motion";
-import { ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function AnimatedCartButton() {
@@ -40,7 +40,7 @@ export default function AnimatedCartButton() {
                 animate={controls}
                 className="flex items-center justify-center gap-2"
             >
-                <ShoppingCart size={20} />
+                <ShoppingCartSimpleIcon size={20} weight="duotone"/>
             </motion.span>
         </button>
     );

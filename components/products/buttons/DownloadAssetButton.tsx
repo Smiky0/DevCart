@@ -1,8 +1,8 @@
 "use client";
 
-import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { DownloadIcon } from "@phosphor-icons/react";
 
 export default function DownloadAssetButton({
     assetId,
@@ -66,12 +66,12 @@ export default function DownloadAssetButton({
         <button
             onClick={handleDownload}
             disabled={downloading}
-            className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary/30 transition-all duration-200 hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/40 active:scale-95 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
+            className="flex items-center gap-2 rounded-full bg-primary px-8 py-3 text-sm font-semibold text-white shadow-md shadow-primary/30 transition-all duration-200 hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/40 active:scale-95 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
         >
-            <Download
-                size={16}
-                strokeWidth={2.5}
-                className={downloading ? "animate-bounce" : ""}
+            <DownloadIcon
+                size={20}
+				weight="duotone"
+				className={downloading ? "animate-bounce" : ""}
             />
             {downloading ? "Downloading…" : "Download"}
         </button>

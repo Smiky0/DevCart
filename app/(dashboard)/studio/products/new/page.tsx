@@ -2,16 +2,16 @@
 
 import { addProduct } from "@/server/actions/product";
 import {
-    ArrowLeft,
-    ImageIcon,
-    Package,
-    DollarSign,
-    Tag,
-    FileText,
-    Upload,
-    File,
-    X,
-} from "lucide-react";
+    ArrowLeftIcon,
+    FileCloudIcon,
+    FileTextIcon,
+    FoldersIcon,
+    ImagesIcon,
+    PackageIcon,
+    TagIcon,
+    UploadIcon,
+    XIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -157,7 +157,7 @@ export default function NewProductPage() {
                 href="/studio"
                 className="inline-flex items-center gap-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-200 group mb-8"
             >
-                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+                <ArrowLeftIcon className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
                 Back to Dashboard
             </Link>
 
@@ -187,8 +187,9 @@ export default function NewProductPage() {
                                     htmlFor="title"
                                     className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2"
                                 >
-                                    <Package
-                                        size={15}
+                                    <PackageIcon
+                                        size={18}
+                                        weight="duotone"
                                         className="text-primary"
                                     />
                                     Product Title
@@ -209,8 +210,9 @@ export default function NewProductPage() {
                                     htmlFor="description"
                                     className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2"
                                 >
-                                    <FileText
-                                        size={15}
+                                    <FileTextIcon
+                                        size={18}
+                                        weight="duotone"
                                         className="text-primary"
                                     />
                                     Description
@@ -233,8 +235,9 @@ export default function NewProductPage() {
                                         htmlFor="price"
                                         className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2"
                                     >
-                                        <DollarSign
-                                            size={15}
+                                        <TagIcon
+                                            size={18}
+                                            weight="duotone"
                                             className="text-primary"
                                         />
                                         Price (USD)
@@ -262,8 +265,9 @@ export default function NewProductPage() {
                                         htmlFor="category"
                                         className="flex items-center gap-2 text-sm font-semibold text-foreground mb-2"
                                     >
-                                        <Tag
-                                            size={15}
+                                        <FoldersIcon
+                                            size={18}
+                                            weight="duotone"
                                             className="text-primary"
                                         />
                                         Category
@@ -291,7 +295,11 @@ export default function NewProductPage() {
                         {/* File Asset Upload Card */}
                         <div className="bg-surface border border-border/60 rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
                             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                                <Upload size={18} className="text-primary" />
+                                <UploadIcon
+                                    size={20}
+                                    weight="duotone"
+                                    className="text-primary"
+                                />
                                 Digital File
                             </h2>
                             <p className="text-xs text-muted">
@@ -330,8 +338,9 @@ export default function NewProductPage() {
                                             </p>
                                         </>
                                     :   <>
-                                            <Upload
+                                            <UploadIcon
                                                 size={28}
+                                                weight="duotone"
                                                 className="text-muted mb-3"
                                             />
                                             <p className="text-sm font-medium text-foreground">
@@ -349,7 +358,10 @@ export default function NewProductPage() {
                                 </div>
                             :   <div className="flex items-center gap-4 rounded-xl border border-border/60 bg-surface-alt/40 p-4">
                                     <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-primary shrink-0">
-                                        <File size={20} />
+                                        <FileCloudIcon
+                                            size={20}
+                                            weight="duotone"
+                                        />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-semibold text-foreground truncate">
@@ -364,7 +376,7 @@ export default function NewProductPage() {
                                         onClick={() => setFileAsset(null)}
                                         className="p-2 rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
                                     >
-                                        <X size={16} />
+                                        <XIcon size={16} weight="bold" />
                                     </button>
                                 </div>
                             }
@@ -376,7 +388,11 @@ export default function NewProductPage() {
                         {/* Cover Images Card */}
                         <div className="bg-surface border border-border/60 rounded-2xl shadow-sm p-6 space-y-4">
                             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                                <ImageIcon size={18} className="text-primary" />
+                                <ImagesIcon
+                                    size={18}
+                                    weight={"duotone"}
+                                    className="text-primary"
+                                />
                                 Cover Images
                             </h2>
                             <p className="text-xs text-muted">
@@ -409,8 +425,9 @@ export default function NewProductPage() {
                                         </p>
                                     </>
                                 :   <>
-                                        <Upload
-                                            size={24}
+                                        <UploadIcon
+											size={24}
+											weight="duotone"
                                             className="text-muted mb-2"
                                         />
                                         <p className="text-sm font-medium text-foreground">
@@ -425,6 +442,11 @@ export default function NewProductPage() {
                                     </>
                                 }
                             </div>
+                            <p className="text-xs text-muted">
+                                {
+                                    "NOTE: Use transparent PNG images with 1:1 ratio to make your product look better."
+                                }
+                            </p>
 
                             {/* Image previews grid */}
                             {coverImages.length > 0 && (
@@ -457,7 +479,10 @@ export default function NewProductPage() {
                                                 }
                                                 className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity cursor-pointer hover:bg-danger"
                                             >
-                                                <X size={12} />
+                                                <XIcon
+                                                    size={14}
+                                                    weight="bold"
+                                                />
                                             </button>
                                         </div>
                                     ))}

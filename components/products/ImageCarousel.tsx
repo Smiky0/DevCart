@@ -1,9 +1,9 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { CaretCircleLeftIcon, CaretCircleRightIcon } from "@phosphor-icons/react";
 
 interface ImageCarouselProps {
     images: string[];
@@ -84,18 +84,18 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
                                 e.preventDefault();
                                 prev();
                             }}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-black/60"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-foreground/40 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-black/60"
                         >
-                            <ChevronLeft size={18} />
+                            <CaretCircleLeftIcon size={38} weight="duotone" />
                         </button>
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 next();
                             }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-black/60"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-foreground/40 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-black/60"
                         >
-                            <ChevronRight size={18} />
+                            <CaretCircleRightIcon size={38} weight="duotone" />
                         </button>
                     </>
                 )}
