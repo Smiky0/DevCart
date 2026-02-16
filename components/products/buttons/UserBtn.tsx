@@ -63,7 +63,7 @@ export default function UserLogin({
                     <div className="relative" ref={dropdownRef}>
                         <motion.button
                             className={`flex items-center justify-center gap-1 px-3 py-2 rounded-4xl text-surface border border-primary/40 cursor-pointer transition-colors duration-200
-                                ${isOpen ? "bg-primary shadow-md" : "bg-primary/80 hover:bg-primary"}`}
+                                ${isOpen ? "bg-primary-dark shadow-md" : "bg-primary hover:bg-primary-dark"}`}
                             onClick={() => setIsOpen(!isOpen)}
                         >
                             <UserIcon size={18} weight="duotone" />
@@ -105,7 +105,7 @@ export default function UserLogin({
                                             },
                                             {
                                                 icon: ShoppingBagIcon,
-                                                label: "Purchases",
+                                                label: "Orders",
                                                 onClick: handleOrders,
                                             },
                                         ].map((item, i) => (
