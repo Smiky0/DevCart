@@ -119,7 +119,7 @@ export default function UserLogin({
                                                     ease: [0.22, 1, 0.36, 1],
                                                 }}
                                                 onClick={item.onClick}
-                                                className="w-full text-left px-4 py-2.5 text-sm text-foreground cursor-pointer group hover:bg-primary hover:text-surface hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
+                                                className="w-full text-left px-4 py-2.5 text-sm font-sans tracking-wide text-foreground cursor-pointer group hover:bg-primary hover:text-surface hover:font-medium flex items-center gap-3 transition-colors rounded-2xl"
                                             >
                                                 <item.icon
                                                     size={16}
@@ -141,7 +141,7 @@ export default function UserLogin({
                                                 ease: [0.22, 1, 0.36, 1],
                                             }}
                                             onClick={handleSignOut}
-                                            className="w-full px-4 py-2.5 text-sm text-red-600 cursor-pointer hover:bg-red-500 hover:text-surface hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
+                                            className="w-full px-4 py-2.5 text-sm font-sans text-red-600 cursor-pointer hover:bg-red-500 hover:text-surface hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
                                         >
                                             <SignOutIcon
                                                 size={16}

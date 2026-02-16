@@ -54,13 +54,13 @@ export default async function ProductPage({
                 {/* DETAILS */}
                 <div className="mt-10 lg:mt-0">
                     <FadeIn delay={0.15} direction="right">
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-2 mb-4">
                             <span className="inline-block rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-semibold uppercase tracking-wider">
-                                Digital Product
+                                {product.category}
                             </span>
                         </div>
 
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                        <h1 className="text-3xl font-semibold text-foreground/80 leading-tight tracking-tight">
                             {product.title}
                         </h1>
                     </FadeIn>
@@ -68,7 +68,7 @@ export default async function ProductPage({
                     <FadeIn delay={0.25} direction="right">
                         <div className="mt-6 rounded-2xl border border-border/60 bg-surface p-6 shadow-sm">
                             <div className="flex items-baseline gap-2">
-                                <span className="text-3xl font-bold text-foreground">
+                                <span className="text-3xl font-sans font-medium tracking-tight text-foreground">
                                     ${product.price.toFixed(2)}
                                 </span>
                                 <span className="text-sm text-muted">
@@ -96,13 +96,13 @@ export default async function ProductPage({
 
                     <FadeIn delay={0.35} direction="right">
                         <div className="mt-8">
-                            <h2 className="text-lg font-semibold text-foreground mb-3">
+                            <h2 className="text-lg font-semibold text-foreground/70 mb-2">
                                 Description
                             </h2>
                             <div className="prose prose-slate text-muted leading-relaxed">
                                 <p>
                                     {product.description ||
-                                        "No description available."}
+                                        "No description available for this product."}
                                 </p>
                             </div>
                         </div>
