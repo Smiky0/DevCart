@@ -49,10 +49,10 @@ function AddToCartButton({
             <button
                 onClick={handleOnClick}
                 disabled={productAdded || loading}
-                className="flex items-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-4 py-2.5 text-sm font-semibold text-surface transition-all duration-200 active:scale-95 shadow-sm hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary-dark px-6 py-3 text-sm font-semibold text-white shadow-md shadow-primary/30 transition-all duration-200 hover:shadow-lg hover:shadow-primary/40 active:scale-95 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
             >
                 <ShoppingCartSimpleIcon className="h-4 w-4" weight="duotone" />
-                {productAdded ? "Added" : "Add to Cart"}
+                {productAdded ? "Added to Cart" : "Add to Cart"}
             </button>
         </div>
     );
