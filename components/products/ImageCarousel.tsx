@@ -3,7 +3,10 @@
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CaretCircleLeftIcon, CaretCircleRightIcon } from "@phosphor-icons/react";
+import {
+    CaretCircleLeftIcon,
+    CaretCircleRightIcon,
+} from "@phosphor-icons/react";
 
 interface ImageCarouselProps {
     images: string[];

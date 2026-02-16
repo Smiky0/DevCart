@@ -42,7 +42,7 @@ function RemoveFromCart({
             <button
                 onClick={handleOnClick}
                 disabled={loading}
-                className="flex items-center gap-2 rounded-xl bg-danger/15 border border-danger/20 text-danger px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95 hover:bg-danger/90 hover:text-surface cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 rounded-xl bg-danger/15 border border-danger/20 text-danger px-8 py-3 text-sm font-semibold shadow-md shadow-danger/30 transition-all duration-200 hover:bg-danger hover:text-white hover:shadow-lg hover:shadow-danger/40 active:scale-95 disabled:opacity-60 disabled:pointer-events-none cursor-pointer"
             >
                 <ShoppingCartSimpleIcon className="h-4 w-4" weight="duotone" />
                 {"Remove"}

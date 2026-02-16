@@ -426,8 +426,8 @@ export default function NewProductPage() {
                                     </>
                                 :   <>
                                         <UploadIcon
-											size={24}
-											weight="duotone"
+                                            size={24}
+                                            weight="duotone"
                                             className="text-muted mb-2"
                                         />
                                         <p className="text-sm font-medium text-foreground">

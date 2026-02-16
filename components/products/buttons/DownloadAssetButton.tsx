@@ -70,8 +70,8 @@ export default function DownloadAssetButton({
         >
             <DownloadIcon
                 size={20}
-				weight="duotone"
-				className={downloading ? "animate-bounce" : ""}
+                weight="duotone"
+                className={downloading ? "animate-bounce" : ""}
             />
             {downloading ? "Downloading…" : "Download"}
         </button>

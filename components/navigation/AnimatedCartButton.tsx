@@ -40,7 +40,7 @@ export default function AnimatedCartButton() {
                 animate={controls}
                 className="flex items-center justify-center gap-2"
             >
-                <ShoppingCartSimpleIcon size={20} weight="duotone"/>
+                <ShoppingCartSimpleIcon size={20} weight="duotone" />
             </motion.span>
         </button>
     );
