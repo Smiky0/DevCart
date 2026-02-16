@@ -8,7 +8,7 @@ import prisma from "./prisma";
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
     providers: [GitHub, Google],
-    // pages: { signIn: "/signin" },
+    pages: { signIn: "/signin" },
     callbacks: {
         async session({ session }) {
             if (session.user) {
