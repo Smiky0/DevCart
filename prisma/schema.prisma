@@ -103,9 +103,9 @@ model Product {
 model FileAsset {
     id         String @id @default(cuid())
     productId  String @unique
-    fileName   String // "ui-kit-v2.zip"
+    fileName   String
     fileSize   Int // In bytes (for showing "250MB")
-    storageKey String // The hidden ID in AWS S3 / Cloudflare R2
+    storageKey String // The hidden ID in Cloudflare R2
 
     product Product @relation(fields: [productId], references: [id])
 }
