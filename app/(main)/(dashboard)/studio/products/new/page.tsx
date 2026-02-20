@@ -28,6 +28,8 @@ const CATEGORIES = [
     "Plugins",
     "Other",
 ];
+const MAX_FILE_SIZE = 150 * 1024 * 1024;
+const MAX_COVER_IMAGE_SIZE = 5 * 1024 * 1024;
 
 function formatFileSize(bytes: number) {
     if (bytes < 1024) return bytes + " B";
@@ -39,8 +41,10 @@ export default function NewProductPage() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
 
-    // Cover images state (stored as base64 data URLs)
-    const [coverImages, setCoverImages] = useState<string[]>([]);
+    // Cover images state (previewUrl for display, key for R2 storage)
+    const [coverImages, setCoverImages] = useState<
+        { previewUrl: string; key: string }[]
+    >([]);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
 
     // File asset state
@@ -52,23 +56,70 @@ export default function NewProductPage() {
     const [isUploading, setIsUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
 
+    // upload cover images to public R2 bucket
     const handleImageUpload = useCallback(async (files: FileList | File[]) => {
         setIsUploadingImage(true);
         try {
-            for (const file of Array.from(files)) {
-                if (!file.type.startsWith("image/")) {
-                    toast.error(`"${file.name}" is not an image`);
-                    continue;
+            const fileArray = Array.from(files);
+            if (fileArray.length > 5)
+                return toast.warning("Can't upload more than 5 images.");
+            // validate file size and type
+            for (const file of fileArray) {
+                if (file.size > MAX_COVER_IMAGE_SIZE) {
+                    return toast.error(
+                        `"${file.name}" size is larger than ${MAX_COVER_IMAGE_SIZE / 1024}KB.`,
+                    );
                 }
-                const formData = new FormData();
-                formData.append("file", file);
-                const res = await fetch("/api/upload", {
-                    method: "POST",
-                    body: formData,
-                });
-                if (!res.ok) throw new Error("Upload failed");
-                const data = await res.json();
-                setCoverImages((prev) => [...prev, data.storageKey]);
+                if (!file.type.startsWith("image/")) {
+                    return toast.error(`"${file.name}" is not an image`);
+                }
+            }
+            const uploadResults = await Promise.all(
+                fileArray.map(async (file) => {
+                    // get the signed URL
+                    const res = await fetch("/api/upload", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            filename: file.name,
+                            fileType: file.type,
+                            isPrivate: false,
+                        }),
+                    });
+                    // show error if signed URL didnt generate
+                    if (!res.ok) {
+                        const err = await res.json();
+                        toast.error(err.error || "Failed to get upload URL.");
+                        return null;
+                    }
+                    const { url, key, metadata } = await res.json();
+                    // upload the file to R2 bucket
+                    const uploadFile = await fetch(url, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": file.type,
+                            "x-amz-meta-originalfilename":
+                                metadata.originalfilename,
+                            "x-amz-meta-uploadedby": metadata.uploadedby,
+                        },
+                        body: file,
+                    });
+                    // if file couldnt be uploaded
+                    if (!uploadFile.ok) {
+                        toast.error("Couldn't upload file to storage");
+                        return null;
+                    }
+                    // create a local preview URL for display
+                    const previewUrl = URL.createObjectURL(file);
+                    return { previewUrl, key };
+                }),
+            );
+            const successful = uploadResults.filter(
+                (r): r is { previewUrl: string; key: string } => r !== null,
+            );
+            if (successful.length > 0) {
+                setCoverImages((prev) => [...prev, ...successful]);
+                toast.success(`${successful.length} image(s) uploaded.`);
             }
         } catch {
             toast.error("Failed to upload image(s)");
@@ -77,32 +128,56 @@ export default function NewProductPage() {
         }
     }, []);
 
+    // upload file to private R2 bucket (cloudflare server).
     const handleFileUpload = useCallback(async (file: File) => {
         setIsUploading(true);
+        if (file.size > MAX_FILE_SIZE)
+            return toast.error(
+                "File size can't be greater than " +
+                    MAX_FILE_SIZE / 1024 +
+                    "KB.",
+            );
         try {
-            const formData = new FormData();
-            formData.append("file", file);
-
+            // get the signed URL
             const res = await fetch("/api/upload", {
                 method: "POST",
-                body: formData,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    filename: file.name,
+                    fileType: file.type,
+                    isPrivate: true,
+                }),
             });
-
+            // show error if signed URL didnt generate
             if (!res.ok) {
                 const err = await res.json();
-                throw new Error(err.error || "Upload failed");
+                return toast.error(err.error || "Failed to get upload URL.");
             }
-
-            const data = await res.json();
-            setFileAsset({
-                fileName: data.fileName,
-                fileSize: data.fileSize,
-                storageKey: data.storageKey,
+            const { url, key, metadata } = await res.json();
+            // upload the file to R2 bucket
+            const uploadFile = await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": file.type,
+                    "x-amz-meta-originalfilename": metadata.originalfilename,
+                    "x-amz-meta-uploadedby": metadata.uploadedby,
+                },
+                body: file,
             });
-            toast.success(`"${data.fileName}" uploaded`);
+            // if file couldnt be uploaded
+            if (!uploadFile.ok) {
+                return toast.error("Couldn't upload file to storage");
+            }
+            // when file uploads
+            setFileAsset({
+                fileName: file.name,
+                fileSize: file.size,
+                storageKey: key,
+            });
+            return toast.success(`"${file.name}" uploaded.`);
         } catch (err) {
-            toast.error(
-                err instanceof Error ? err.message : "Failed to upload file",
+            return toast.error(
+                err instanceof Error ? err.message : "Failed to upload file.",
             );
         } finally {
             setIsUploading(false);
@@ -122,15 +197,18 @@ export default function NewProductPage() {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (coverImages.length === 0) {
-            toast.error("Please upload at least one cover image.");
+        if (!fileAsset || coverImages.length === 0) {
+            toast.error("Please upload at least one file and one cover image.");
             return;
         }
 
         const formData = new FormData(e.currentTarget);
 
         // Append cover images as JSON
-        formData.append("images", JSON.stringify(coverImages));
+        formData.append(
+            "images",
+            JSON.stringify(coverImages.map((img) => img.key)),
+        );
 
         // Append file asset data as hidden fields
         if (fileAsset) {
@@ -457,7 +535,7 @@ export default function NewProductPage() {
                                             className="relative group/img aspect-4/3 rounded-lg overflow-hidden border border-border/60 bg-surface-alt"
                                         >
                                             <Image
-                                                src={img}
+                                                src={img.previewUrl}
                                                 alt={`Cover ${i + 1}`}
                                                 fill
                                                 unoptimized

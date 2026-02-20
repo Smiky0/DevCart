@@ -1,54 +1,67 @@
 import { auth } from "@/lib/auth";
+import { r2 } from "@/lib/cloudflareR2";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
-import { mkdir, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
+const MAX_FILENAME_LENGTH = 255;
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
-
-export async function POST(req: NextRequest) {
+// generates and returns a signed URL to upload files directly to server from frontend.
+export async function POST(request: NextRequest) {
     const session = await auth();
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: "Not authenticated" },
-            { status: 401 },
-        );
+    if (!session?.user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
     try {
-        const formData = await req.formData();
-        const file = formData.get("file") as File | null;
-
-        if (!file) {
+        const { filename, fileType, isPrivate } = await request.json();
+        // sanitize filename
+        const sanitizedFileName = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
+        // validate filename length and filesize
+        if (filename.length > MAX_FILENAME_LENGTH) {
             return NextResponse.json(
-                { error: "No file provided" },
+                { error: "Invalid File" },
                 { status: 400 },
             );
         }
 
-        // Ensure upload directory exists
-        await mkdir(UPLOAD_DIR, { recursive: true });
+        // bucket name based on contentType
+        const bucketName =
+            isPrivate ?
+                process.env.R2_PRIVATE_BUCKET
+            :   process.env.R2_PUBLIC_BUCKET;
+        // unique file name to avoid collision
+        const fileKey = `uploads/${session.user.id}/${randomUUID()}`;
 
-        // Generate a unique filename: uuid + original extension
-        const ext = path.extname(file.name) || "";
-        const assetId = randomUUID();
-        const fileName = `${assetId}${ext}`;
-        const filePath = path.join(UPLOAD_DIR, fileName);
+        const metadata = {
+            originalfilename: sanitizedFileName,
+            uploadedby: session.user.id!,
+        };
 
-        // Write file to disk
-        const bytes = await file.arrayBuffer();
-        await writeFile(filePath, Buffer.from(bytes));
-
-        // Return a public URL path (served from /public)
-        const publicUrl = `/uploads/${fileName}`;
-
-        return NextResponse.json({
-            storageKey: publicUrl,
-            fileName: file.name,
-            fileSize: file.size,
-            assetId,
+        const command = new PutObjectCommand({
+            Bucket: bucketName,
+            Key: fileKey,
+            ContentType: fileType,
+            // store original filename in metadata to avoid collision
+            Metadata: metadata,
         });
-    } catch {
-        return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+        // generate an URL that allows PUT request for 60 seconds
+        // unhoistableHeaders keeps metadata as headers so R2 stores them correctly
+        const signedUrl = await getSignedUrl(r2, command, {
+            expiresIn: 60,
+            unhoistableHeaders: new Set([
+                "x-amz-meta-originalfilename",
+                "x-amz-meta-uploadedby",
+            ]),
+        });
+        return NextResponse.json({
+            url: signedUrl,
+            key: fileKey,
+            metadata: metadata,
+        });
+    } catch (error) {
+        return NextResponse.json(
+            { error: "Error generating URL: " + error },
+            { status: 500 },
+        );
     }
 }

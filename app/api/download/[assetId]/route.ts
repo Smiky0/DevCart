@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
+import { r2 } from "@/lib/cloudflareR2";
 import prisma from "@/lib/prisma";
-import { readFile } from "fs/promises";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
@@ -57,13 +58,20 @@ export async function GET(
             );
         }
 
-        // Read the file from disk
-        const filePath = path.join(
-            process.cwd(),
-            "public",
-            fileAsset.storageKey,
-        );
-        const fileBuffer = await readFile(filePath);
+        // Fetch the file from R2 private bucket
+        const command = new GetObjectCommand({
+            Bucket: process.env.R2_PRIVATE_BUCKET,
+            Key: fileAsset.storageKey,
+        });
+
+        const r2Response = await r2.send(command);
+
+        if (!r2Response.Body) {
+            return NextResponse.json(
+                { error: "File not found in storage" },
+                { status: 404 },
+            );
+        }
 
         // Determine content type from extension
         const ext = path.extname(fileAsset.fileName).toLowerCase();
@@ -82,13 +90,21 @@ export async function GET(
             ".fig": "application/octet-stream",
             ".sketch": "application/octet-stream",
         };
-        const contentType = mimeTypes[ext] || "application/octet-stream";
+        const contentType =
+            r2Response.ContentType ||
+            mimeTypes[ext] ||
+            "application/octet-stream";
 
-        return new NextResponse(fileBuffer, {
+        // Convert the R2 readable stream to a web ReadableStream
+        const stream = r2Response.Body.transformToWebStream() as ReadableStream;
+
+        return new NextResponse(stream, {
             headers: {
                 "Content-Type": contentType,
                 "Content-Disposition": `attachment; filename="${fileAsset.fileName}"`,
-                "Content-Length": fileBuffer.length.toString(),
+                ...(r2Response.ContentLength && {
+                    "Content-Length": r2Response.ContentLength.toString(),
+                }),
             },
         });
     } catch {
