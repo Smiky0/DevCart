@@ -1,51 +1,89 @@
 # DevCart — Digital Marketplace
 
-A full-stack digital marketplace built with **Next.js 16**, **React 19**, **Prisma 7**, and **PostgreSQL**. Sellers list digital products (templates, tools, assets), buyers browse, add to cart, and purchase — all within a server-rendered, type-safe application.
+A full-stack digital marketplace where creators sell and buyers instantly download digital products — templates, icons, UI kits, fonts, and more.
 
-> **Status:** Under active development. Core marketplace functionality is in place; payment processing and expanded auth providers are on the roadmap.
+Built with **Next.js 16**, **React 19**, **Prisma 7**, **Cloudflare R2**, and **NextAuth v5**.
+
+---
+
+## Screenshots
+
+<!-- Replace the paths below with actual screenshot images -->
+
+| Page | Screenshot |
+|------|-----------|
+| Home / Shop | ![Shop](screenshots/shop.png) |
+| Product Detail | ![Product](screenshots/product.png) |
+| Cart | ![Cart](screenshots/cart.png) |
+| Studio Dashboard | ![Studio](screenshots/studio.png) |
+| Create Product | ![New Product](screenshots/new-product.png) |
+| Orders / Library | ![Orders](screenshots/orders.png) |
 
 ---
 
 ## Tech Stack
 
-| Layer          | Technology                                  |
-| -------------- | ------------------------------------------- |
-| Framework      | Next.js 16 (App Router, Server Actions)     |
-| UI             | React 19, Tailwind CSS 4, Framer Motion     |
-| Auth           | NextAuth v5 (beta) + Prisma Adapter         |
-| Database       | PostgreSQL via Prisma ORM 7                 |
-| Icons          | Phosphor Icons                              |
-| Notifications  | Sonner (toast system)                       |
-| Language       | TypeScript 5                                |
-| Package Mgr    | pnpm (workspace-enabled)                    |
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router, Server Actions) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS v4 |
+| Database | PostgreSQL + Prisma 7 |
+| Auth | NextAuth v5 (GitHub, Google OAuth) |
+| File Storage | Cloudflare R2 (S3-compatible, public + private buckets) |
+| Payments | Stripe (webhook-based) |
+| Animations | Framer Motion |
+| Icons | Phosphor Icons |
+| Notifications | Sonner (toast system) |
+| Package Manager | pnpm |
 
 ---
 
 ## Features
 
-- **Storefront** — Browse published products with search, category filtering, and multi-field sorting (title, price, popularity).
-- **Seller Dashboard** — Create, edit, and manage product listings including image uploads and downloadable file assets.
-- **Cart System** — Persistent server-side cart per user with add/remove operations and cart count in the navbar.
-- **Purchase Flow** — Purchase tracking with buyer/seller relationships and per-item records.
-- **File Downloads** — Secure asset delivery via an authenticated download API route.
-- **Role-based Access** — `USER` and `ADMIN` roles defined at the schema level.
-- **OAuth Authentication** — GitHub provider configured via NextAuth v5 with session callbacks.
-- **Responsive UI** — Mobile-first layout with animated transitions (Framer Motion) and toast notifications.
+- **Storefront** — Browse products with search, category filtering, and multi-field sorting.
+- **Seller Studio** — Create and manage product listings with drag-and-drop image uploads and downloadable file attachments.
+- **Direct-to-R2 Uploads** — Presigned URL flow: images and assets upload directly from the browser to Cloudflare R2.
+- **Secure Downloads** — Private file assets served through an authenticated API route with ownership verification.
+- **Cart System** — Persistent server-side cart per user with real-time count in the navbar.
+- **Purchase Tracking** — Full buyer/seller transaction records with per-item pricing.
+- **OAuth Authentication** — GitHub + Google sign-in via NextAuth v5 with Prisma adapter.
+- **Responsive UI** — Mobile-first layout with animated page transitions and toast notifications.
 
 ---
 
-## Project Structure
+## Architecture
 
 ```
 app/
-  (shop)/             # Public storefront — browse, product detail, cart, checkout
-  (dashboard)/        # Authenticated area — library, orders, studio (product CRUD)
-  api/                # Route handlers — auth, file download, upload, webhooks
-components/           # Shared UI — navbar, product cards, buttons, motion wrappers
-server/actions/       # Server Actions — cart and product mutations
-lib/                  # Auth config, Prisma client, utility modules
-prisma/               # Schema, migrations, seed script
+├── (main)/
+│   ├── (shop)/              # Public — browse, product detail, cart, checkout
+│   └── (dashboard)/         # Authenticated — studio, orders, library
+├── api/
+│   ├── auth/[...nextauth]/  # NextAuth route handler
+│   ├── upload/              # Presigned URL generation for R2
+│   ├── download/[assetId]/  # Secure file download from R2 private bucket
+│   └── webhooks/stripe/     # Stripe payment webhook
+├── signin/                  # Custom sign-in page
+└── not-found.tsx            # 404 page
+
+server/actions/              # Server actions (cart, product CRUD)
+lib/                         # Prisma client, R2 client, auth config, utils
+components/                  # Shared UI components
+prisma/                      # Schema, migrations, seed, clearDB
 ```
+
+### Upload Flow
+
+```
+Client ──POST──▶ /api/upload (get presigned URL)
+       ◀─────── { url, key, metadata }
+Client ──PUT───▶ R2 bucket (direct upload with metadata headers)
+       ──────── Storage key saved to database
+```
+
+- **Public bucket** → Cover images (served via `NEXT_PUBLIC_IMAGE_HOST`)
+- **Private bucket** → Downloadable file assets (served through `/api/download` with purchase/ownership check)
 
 ---
 
@@ -55,70 +93,108 @@ prisma/               # Schema, migrations, seed script
 
 - Node.js 20+
 - pnpm
-- PostgreSQL instance (local or hosted)
+- PostgreSQL database
+- Cloudflare R2 (one public + one private bucket)
+- GitHub and/or Google OAuth app credentials
 
-### Setup
+### 1. Clone & Install
 
 ```bash
-# Clone the repository
-git clone https://github.com/<your-username>/devcart.git
-cd devcart/ecommerce-app
-
-# Install dependencies
+git clone <repo-url>
+cd ecommerce-app
 pnpm install
+```
 
-# Configure environment variables
-cp .env.example .env
-# Fill in DATABASE_URL, NEXTAUTH_SECRET, GITHUB_ID, GITHUB_SECRET
+### 2. Environment Variables
 
-# Run database migrations
-pnpm exec prisma migrate dev
+Create a `.env` file in the project root:
 
-# Seed the database (optional)
-pnpm exec prisma db seed
+```env
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/devcart
 
-# Start the dev server
+# Auth
+AUTH_SECRET=<random-secret>
+AUTH_GITHUB_ID=<github-oauth-client-id>
+AUTH_GITHUB_SECRET=<github-oauth-client-secret>
+AUTH_GOOGLE_ID=<google-oauth-client-id>
+AUTH_GOOGLE_SECRET=<google-oauth-client-secret>
+
+# Cloudflare R2
+R2_ACCOUNT_ID=<cloudflare-account-id>
+R2_ACCESS_KEY_ID=<r2-access-key>
+R2_SECRET_ACCESS_KEY=<r2-secret-key>
+R2_PUBLIC_BUCKET=<public-bucket-name>
+R2_PRIVATE_BUCKET=<private-bucket-name>
+
+# Public URL for cover images
+NEXT_PUBLIC_IMAGE_HOST=https://<your-bucket>.r2.dev
+
+# Stripe
+STRIPE_SECRET_KEY=<stripe-secret-key>
+STRIPE_WEBHOOK_SECRET=<stripe-webhook-signing-secret>
+```
+
+### 3. Database Setup
+
+```bash
+pnpm prisma generate
+pnpm prisma migrate dev
+
+# Optional: seed sample data
+pnpm prisma db seed
+```
+
+### 4. R2 CORS Configuration
+
+Add this CORS policy to **both** R2 buckets (public and private) in the Cloudflare dashboard:
+
+| Setting | Value |
+|---------|-------|
+| Allowed Origins | `http://localhost:3000` |
+| Allowed Methods | `GET`, `PUT`, `HEAD` |
+| Allowed Headers | `content-type`, `content-length`, `x-amz-meta-*` |
+
+### 5. Run
+
+```bash
 pnpm dev
 ```
 
-The app will be available at `http://localhost:3000`.
-
----
-
-## Environment Variables
-
-| Variable           | Description                        |
-| ------------------ | ---------------------------------- |
-| `DATABASE_URL`     | PostgreSQL connection string       |
-| `NEXTAUTH_SECRET`  | Random secret for session signing  |
-| `GITHUB_ID`        | GitHub OAuth app client ID         |
-| `GITHUB_SECRET`    | GitHub OAuth app client secret     |
-
----
-
-## Roadmap
-
-- [ ] **Stripe Integration** — Implement Stripe Checkout and webhook handling for real payment processing.
-- [ ] **Expanded Auth** — Add Google, email/password, and magic link sign-in options for a proper login system.
-- [ ] **Admin Panel** — Dedicated admin dashboard for platform-wide moderation and analytics.
-- [ ] **S3 / R2 Storage** — Migrate file asset storage to a cloud object store (AWS S3 or Cloudflare R2).
-- [ ] **Reviews & Ratings** — Allow buyers to leave feedback on purchased products.
-- [ ] **Seller Analytics** — Sales metrics, revenue tracking, and download statistics per product.
-- [ ] **Email Notifications** — Transactional emails for purchase confirmations and download links.
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## Scripts
 
-| Command          | Description                  |
-| ---------------- | ---------------------------- |
-| `pnpm dev`       | Start development server     |
-| `pnpm build`     | Production build             |
-| `pnpm start`     | Start production server      |
-| `pnpm lint`      | Run ESLint                   |
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Production build |
+| `pnpm start` | Start production server |
+| `pnpm lint` | Run ESLint |
+| `pnpm prisma generate` | Regenerate Prisma client |
+| `pnpm prisma migrate dev` | Run database migrations |
+| `pnpm prisma db seed` | Seed sample data |
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `lib/auth.ts` | NextAuth config — GitHub + Google providers, Prisma adapter |
+| `lib/prisma.ts` | Prisma client singleton with `@prisma/adapter-pg` |
+| `lib/cloudflareR2.ts` | S3-compatible R2 client |
+| `lib/utils.ts` | Shared utilities (`getImageUrl` for R2 public URLs) |
+| `server/actions/cart.ts` | Cart server actions (add/remove items) |
+| `server/actions/product.ts` | Product CRUD server actions |
+| `prisma/schema.prisma` | Database schema (User, Product, FileAsset, Cart, Purchase) |
+| `prisma/seed.ts` | Sample data seeder |
+| `prisma/clearDB.ts` | Truncate all tables (respects FK constraints) |
 
 ---
 
 ## License
 
-This project is not yet licensed. All rights reserved until a license is added.
+MIT
