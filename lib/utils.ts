@@ -1,4 +1,3 @@
-"use server"
 /**
  * Convert an R2 storage key to a full public URL.
  * Falls back to the key as-is if NEXT_PUBLIC_IMAGE_HOST is not set.
