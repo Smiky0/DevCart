@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { getImageUrl } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function CheckoutPage() {
     const session = await auth();
@@ -46,7 +47,7 @@ export default async function CheckoutPage() {
                                 className="flex items-center gap-4 p-3 rounded-xl bg-background/50"
                             >
                                 {item.product.images[0] && (
-                                    <img
+                                    <Image
                                         src={getImageUrl(
                                             item.product.images[0],
                                         )}
