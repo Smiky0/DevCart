@@ -3,6 +3,7 @@ import ImageCarousel from "@/components/products/ImageCarousel";
 import { FadeIn, ScaleIn } from "@/components/motion/MotionWrappers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { getImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
@@ -46,7 +47,7 @@ export default async function ProductPage({
                 {/* IMAGE */}
                 <ScaleIn delay={0.1}>
                     <ImageCarousel
-                        images={product.images}
+                        images={product.images.map(getImageUrl)}
                         alt={product.title}
                     />
                 </ScaleIn>

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { getImageUrl } from "@/lib/utils";
 import ProductCard from "@/components/products/ProductCard";
 import ShopFilters from "@/components/shop/ShopFilters";
 import { AnimatedCard, FadeIn } from "@/components/motion/MotionWrappers";
@@ -76,7 +77,7 @@ export default async function MainPage({
                                 title={product.title}
                                 category={product.category}
                                 price={product.price}
-                                imageUrl={product.images[0]}
+                                imageUrl={getImageUrl(product.images[0])}
                                 addItem={true}
                             />
                         </AnimatedCard>

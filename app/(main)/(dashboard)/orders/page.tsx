@@ -1,6 +1,7 @@
 import ProductCard from "@/components/products/ProductCard";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { getImageUrl } from "@/lib/utils";
 import { PackageIcon } from "@phosphor-icons/react/dist/ssr";
 import { redirect } from "next/navigation";
 
@@ -35,7 +36,7 @@ export default async function page() {
                 <div className="text-center py-16">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                         <span className="text-3xl">
-                            <PackageIcon size={40} weight="duotone"/>
+                            <PackageIcon size={40} weight="duotone" />
                         </span>
                     </div>
                     <p className="text-lg text-muted">No orders yet</p>
@@ -49,7 +50,7 @@ export default async function page() {
                                 title={item.product.title}
                                 category={item.product.category}
                                 price={item.price}
-                                imageUrl={item.product.images[0]}
+                                imageUrl={getImageUrl(item.product.images[0])}
                                 addItem={false}
                                 isPurchased={true}
                                 fileAssetId={item.product.fileAsset?.id}

@@ -73,7 +73,6 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
                             alt={`${alt} - Image ${current + 1}`}
                             width={1080}
                             height={810}
-                            unoptimized
                             className="h-full w-full object-cover"
                         />
                     </motion.div>
@@ -132,7 +131,6 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
                                 alt={`Thumbnail ${i + 1}`}
                                 width={64}
                                 height={48}
-                                unoptimized
                                 className="h-full w-full object-cover"
                             />
                         </button>

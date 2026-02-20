@@ -7,6 +7,7 @@ import {
 } from "@/components/motion/MotionWrappers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { getImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -98,7 +99,7 @@ export default async function ItemsPage() {
                             title={item.product.title}
                             category={item.product.category}
                             price={item.product.price}
-                            imageUrl={item.product.images[0]}
+                            imageUrl={getImageUrl(item.product.images[0])}
                             cartItemId={item.id}
                             addItem={false}
                         />

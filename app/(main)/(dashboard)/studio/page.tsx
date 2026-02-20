@@ -1,6 +1,7 @@
 import ProductCardDashboard from "@/components/products/ProductCardDashboard";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { getImageUrl } from "@/lib/utils";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -115,7 +116,7 @@ export default async function ListedProducts() {
                             <ProductCardDashboard
                                 key={product.id}
                                 id={product.id}
-                                productImage={product.images[0]}
+                                productImage={getImageUrl(product.images[0])}
                                 productTitle={product.title}
                                 category={product.category}
                                 price={product.price}
