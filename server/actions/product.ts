@@ -1,7 +1,24 @@
 "use server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { r2 } from "@/lib/cloudflareR2";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { revalidatePath } from "next/cache";
+
+/**
+ * Delete objects from R2 buckets. Failures are logged but don't block the operation.
+ */
+async function deleteR2Objects(keys: string[], bucket: string) {
+    await Promise.allSettled(
+        keys.map((key) =>
+            r2
+                .send(new DeleteObjectCommand({ Bucket: bucket, Key: key }))
+                .catch((err) =>
+                    console.error(`Failed to delete R2 object ${key}:`, err),
+                ),
+        ),
+    );
+}
 
 // delete product from user dashboard
 export async function deleteProduct(productId: string) {
@@ -14,11 +31,12 @@ export async function deleteProduct(productId: string) {
 
     // verify if product belongs to user and if product id is valid
     try {
-        // check if product exist
+        // check if product exist (include fileAsset so we can clean up R2)
         const product = await prisma.product.findUnique({
             where: {
                 id: productId,
             },
+            include: { fileAsset: true },
         });
         // if doesnt return
         if (!product) {
@@ -27,6 +45,22 @@ export async function deleteProduct(productId: string) {
         // check if product belongs to user
         if (product.sellerId != user) {
             return { success: false, message: "You don't own the product." };
+        }
+
+        // --- Clean up R2 files ---
+        // Delete public images
+        if (product.images.length > 0) {
+            await deleteR2Objects(
+                product.images,
+                process.env.R2_PUBLIC_BUCKET!,
+            );
+        }
+        // Delete private file asset
+        if (product.fileAsset) {
+            await deleteR2Objects(
+                [product.fileAsset.storageKey],
+                process.env.R2_PRIVATE_BUCKET!,
+            );
         }
     } catch (err) {
         return {
