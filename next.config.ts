@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 protocol: "https",
-                hostname: "devcart.smikx.me",
+                hostname: "*.smikx.me",
             },
             {
                 protocol: "https",
