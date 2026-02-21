@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 protocol: "https",
-                hostname: "*.smikx.me",
+                hostname: "cdn.smikx.me",
+                pathname: "/uploads/**",
             },
             {
                 protocol: "https",
