@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
                 protocol: "https",
                 hostname: "devcart.smikx.me",
             },
+            {
+                protocol: "https",
+                hostname: "*.r2.dev",
+            },
         ],
     },
     // optimize for phospohorus icon to load only modules that are used
