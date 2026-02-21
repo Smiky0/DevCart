@@ -16,7 +16,7 @@ Built with **Next.js 16**, **React 19**, **Prisma 7**, **Cloudflare R2**, and **
 | Product Detail | ![Product](screenshots/product.png) |
 | Cart | ![Cart](screenshots/cart.png) |
 | Studio Dashboard | ![Studio](screenshots/studio.png) |
-| Create Product | ![New Product](screenshots/new-product.png) |
+| Create Product | ![New Product](screenshots/new_product.png) |
 | Orders / Library | ![Orders](screenshots/orders.png) |
 
 ---
