@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
                     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16 animate-fade-in-up">
                         {children}
                     </main>
+                    <SpeedInsights />
                 </body>
             </html>
         </SessionProvider>
