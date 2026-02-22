@@ -3,14 +3,17 @@ import { r2 } from "@/lib/cloudflareR2";
 import prisma from "@/lib/prisma";
 import { downloadRatelimit } from "@/lib/ratelimit";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
-export async function GET({
-    params,
-}: {
-    params: Promise<{ assetId: string }>;
-}) {
+export async function GET(
+    _req: NextRequest,
+    {
+        params,
+    }: {
+        params: Promise<{ assetId: string }>;
+    },
+) {
     const session = await auth();
     const userId = session?.user?.id;
     if (!userId) {
