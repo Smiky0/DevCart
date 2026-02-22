@@ -15,7 +15,7 @@ export default async function Navbar() {
                         href="/"
                         className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground hover:text-primary transition-colors duration-200"
                     >
-                        <span className="hidden sm:inline font-mono">
+                        <span className="font-mono">
                             DevCart
                         </span>
                     </Link>
