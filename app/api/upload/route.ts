@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { r2 } from "@/lib/cloudflareR2";
+import { uploadRatelimit } from "@/lib/ratelimit";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
@@ -14,6 +15,14 @@ export async function POST(request: NextRequest) {
     }
     try {
         const { filename, fileType, isPrivate } = await request.json();
+        // check for upload rate limits
+        const { success } = await uploadRatelimit.limit(session.user.id!);
+        if (!success) {
+            return NextResponse.json(
+                { error: "Too many requests, try again after few minutes." },
+                { status: 429 },
+            );
+        }
         // sanitize filename
         const sanitizedFileName = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
         // validate filename length and filesize
@@ -53,6 +62,7 @@ export async function POST(request: NextRequest) {
                 "x-amz-meta-uploadedby",
             ]),
         });
+
         return NextResponse.json({
             url: signedUrl,
             key: fileKey,

@@ -1,20 +1,32 @@
 import { auth } from "@/lib/auth";
 import { r2 } from "@/lib/cloudflareR2";
 import prisma from "@/lib/prisma";
+import { downloadRatelimit } from "@/lib/ratelimit";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import path from "path";
 
-export async function GET(
-    req: NextRequest,
-    { params }: { params: Promise<{ assetId: string }> },
-) {
+export async function GET({
+    params,
+}: {
+    params: Promise<{ assetId: string }>;
+}) {
     const session = await auth();
     const userId = session?.user?.id;
     if (!userId) {
         return NextResponse.json(
             { error: "Not authenticated" },
             { status: 401 },
+        );
+    }
+    // check for download rate limit
+    const { success } = await downloadRatelimit.limit(userId);
+    if (!success) {
+        return NextResponse.json(
+            {
+                error: "Too many download requests, try again after few minutes.",
+            },
+            { status: 429 },
         );
     }
 
