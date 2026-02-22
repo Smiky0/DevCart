@@ -35,6 +35,8 @@ Built with **Next.js 16**, **React 19**, **Prisma 7**, **Cloudflare R2**, and **
 | Animations | Framer Motion |
 | Icons | Phosphor Icons |
 | Notifications | Sonner (toast system) |
+| Error Monitoring | Sentry (client, server, edge) |
+| Rate Limiting | Upstash Redis + `@upstash/ratelimit` |
 | Package Manager | pnpm |
 
 ---
@@ -49,6 +51,8 @@ Built with **Next.js 16**, **React 19**, **Prisma 7**, **Cloudflare R2**, and **
 - **Purchase Tracking** — Full buyer/seller transaction records with per-item pricing.
 - **OAuth Authentication** — GitHub + Google sign-in via NextAuth v5 with Prisma adapter.
 - **Responsive UI** — Mobile-first layout with animated page transitions and toast notifications.
+- **Error Monitoring** — Sentry integration across client, server, and edge runtimes with session replay and request error capture.
+- **Rate Limiting** — Upload and download API routes are rate-limited (20 req/min per user) via Upstash Redis sliding window.
 
 ---
 
@@ -133,6 +137,10 @@ NEXT_PUBLIC_IMAGE_HOST=https://<your-bucket>.r2.dev
 # Stripe
 STRIPE_SECRET_KEY=<stripe-secret-key>
 STRIPE_WEBHOOK_SECRET=<stripe-webhook-signing-secret>
+
+# Upstash Redis (rate limiting)
+UPSTASH_REDIS_REST_URL=<upstash-redis-rest-url>
+UPSTASH_REDIS_REST_TOKEN=<upstash-redis-rest-token>
 ```
 
 ### 3. Database Setup
@@ -192,6 +200,12 @@ Open [http://localhost:3000](http://localhost:3000).
 | `prisma/schema.prisma` | Database schema (User, Product, FileAsset, Cart, Purchase) |
 | `prisma/seed.ts` | Sample data seeder |
 | `prisma/clearDB.ts` | Truncate all tables (respects FK constraints) |
+| `lib/ratelimit.ts` | Upstash rate limiters for upload/download routes |
+| `sentry.server.config.ts` | Sentry server-side initialization |
+| `sentry.edge.config.ts` | Sentry edge runtime initialization |
+| `instrumentation-client.ts` | Sentry client-side initialization with session replay |
+| `instrumentation.ts` | Next.js instrumentation hook — loads Sentry configs |
+| `app/global-error.tsx` | Global error boundary — reports uncaught errors to Sentry |
 
 ---
 
