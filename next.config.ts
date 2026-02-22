@@ -36,6 +36,7 @@ const nextConfig: NextConfig = {
                         value: [
                             "default-src 'self'",
                             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
+                            "worker-src 'self' blob:",
                             "style-src 'self' 'unsafe-inline'",
                             "img-src 'self' blob: data: https://*.r2.dev https://cdn.smikx.me https://avatars.githubusercontent.com https://lh3.googleusercontent.com",
                             "font-src 'self'",
