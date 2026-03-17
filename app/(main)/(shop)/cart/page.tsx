@@ -30,7 +30,8 @@ export default async function ItemsPage() {
         },
         include: {
             product: true,
-        },
+		},
+		cacheStrategy: {ttl: 60, swr: 20}
     });
     // find total price of cart items.
     const totalPrice = cartItems.reduce((acc, item) => {

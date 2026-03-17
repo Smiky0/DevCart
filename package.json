@@ -16,6 +16,7 @@
         "@phosphor-icons/react": "^2.1.10",
         "@prisma/adapter-pg": "^7.2.0",
         "@prisma/client": "^7.2.0",
+        "@prisma/extension-accelerate": "^3.0.1",
         "@sentry/nextjs": "^10.39.0",
         "@stripe/stripe-js": "^8.7.0",
         "@upstash/ratelimit": "^2.0.8",

@@ -1,19 +1,18 @@
 import { PrismaClient } from "../lib/generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 const globalForPrisma = global as unknown as {
-    prisma: PrismaClient;
+    prisma: ReturnType<typeof makePrismaClient>;
 };
 
-const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL,
-});
- 
-const prisma =
-    globalForPrisma.prisma ||
-    new PrismaClient({
-        adapter,
-    });
+function makePrismaClient() {
+    return new PrismaClient({
+        accelerateUrl: process.env.DATABASE_URL,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any).$extends(withAccelerate());
+}
+
+const prisma = globalForPrisma.prisma || makePrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 

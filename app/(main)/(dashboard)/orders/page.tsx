@@ -25,7 +25,8 @@ export default async function page() {
                     },
                 },
             },
-        },
+		},
+		cacheStrategy:{ttl: 300, swr: 30}
     });
     return (
         <div className="py-6 animate-fade-in-up">

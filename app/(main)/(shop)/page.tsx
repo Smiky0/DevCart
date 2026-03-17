@@ -25,7 +25,8 @@ export default async function MainPage({
     const allCategories = await prisma.product.findMany({
         select: { category: true },
         distinct: ["category"],
-        orderBy: { category: "asc" },
+		orderBy: { category: "asc" },
+		cacheStrategy: {ttl: 600, swr:60}
     });
     const categories = allCategories.map((c) => c.category);
 
@@ -43,7 +44,8 @@ export default async function MainPage({
             ...(category && { category }),
         },
         // If a sort option is selected, apply it
-        orderBy: sort ? sortOptions[sort] : undefined,
+		orderBy: sort ? sortOptions[sort] : undefined,
+		cacheStrategy: {ttl: 120}
     });
 
     return (
