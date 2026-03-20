@@ -167,7 +167,7 @@ export default function UserLogin({
                                 bounce: 0.5,
                             },
                         }}
-                        className="px-4 py-2 bg-primary hover:bg-primary-dark text-surface text-sm font-semibold transition-colors duration-200 rounded-xl cursor-pointer shadow-sm hover:shadow-md"
+                        className="px-5 py-2.5 bg-black hover:bg-black/80 text-surface text-sm font-semibold transition-colors duration-200 rounded-4xl cursor-pointer shadow-sm hover:shadow-md"
                         onClick={handleSignIn}
                     >
                         Sign In
