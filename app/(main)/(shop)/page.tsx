@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { getImageUrl } from "@/lib/utils";
 import ProductCard from "@/components/products/ProductCard";
 import ShopFilters from "@/components/shop/ShopFilters";
+import LandingHero from "@/components/shop/LandingHero";
 import { AnimatedCard, FadeIn } from "@/components/motion/MotionWrappers";
 import Footer from "@/components/navigation/footer";
 
@@ -44,58 +45,51 @@ export default async function MainPage({
             // If a category is selected, filter by it
             ...(category && { category }),
         },
-        // If a sort option is selected, apply it
-        orderBy: sort ? sortOptions[sort] : undefined,
+        // If a sort option is selected, apply it; otherwise show newest first
+        orderBy: sort ? sortOptions[sort] : { id: "desc" },
         cacheStrategy: { ttl: 120 },
     });
 
     return (
-        <div className="py-6">
-            {/* Hero section */}
-            <FadeIn>
-                <div className="mb-10 text-center">
-                    <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
-                        Discover Digital
-                        <span className="text-primary"> Products</span>
-                    </h1>
-                    <p className="mt-3 text-lg text-muted max-w-2xl mx-auto">
-                        Premium templates, tools, and assets — download
-                        instantly and build something amazing.
-                    </p>
-                </div>
-            </FadeIn>
+        <>
+            {/* landing page */}
+            <LandingHero />
 
-            {/* Filters */}
-            <FadeIn delay={0.1}>
-                <ShopFilters categories={categories} />
-            </FadeIn>
-
-            {/* Product grid */}
-            {products.length > 0 ?
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {products.map((product, index) => (
-                        <AnimatedCard key={product.id} index={index}>
-                            <ProductCard
-                                id={product.id}
-                                title={product.title}
-                                category={product.category}
-                                price={product.price}
-                                imageUrl={getImageUrl(product.images[0])}
-                                addItem={true}
-                            />
-                        </AnimatedCard>
-                    ))}
-                </div>
-            :   <FadeIn delay={0.15}>
-                    <div className="text-center py-16">
-                        <p className="text-lg text-muted">No products found</p>
-                        <p className="text-sm text-muted mt-1">
-                            Change your search or filters.
-                        </p>
-                    </div>
+            <div className="py-6" id="products-section">
+                {/* Filters */}
+                <FadeIn delay={0.1} className="mt-20">
+                    <ShopFilters categories={categories} />
                 </FadeIn>
-            }
-            <Footer />
-        </div>
+
+                {/* Product grid */}
+                {products.length > 0 ?
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {products.map((product, index) => (
+                            <AnimatedCard key={product.id} index={index}>
+                                <ProductCard
+                                    id={product.id}
+                                    title={product.title}
+                                    category={product.category}
+                                    price={product.price}
+                                    imageUrl={getImageUrl(product.images[0])}
+                                    addItem={true}
+                                />
+                            </AnimatedCard>
+                        ))}
+                    </div>
+                :   <FadeIn delay={0.15}>
+                        <div className="text-center py-16">
+                            <p className="text-lg text-muted">
+                                No products found
+                            </p>
+                            <p className="text-sm text-muted mt-1">
+                                Change your search or filters.
+                            </p>
+                        </div>
+                    </FadeIn>
+                }
+                <Footer />
+            </div>
+        </>
     );
 }
