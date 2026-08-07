@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
                             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
                             "worker-src 'self' blob:",
                             "style-src 'self' 'unsafe-inline'",
-                            "img-src 'self' blob: data: https://*.r2.dev https://cdn.smikx.me https://avatars.githubusercontent.com https://lh3.googleusercontent.com",
+                            "img-src 'self' blob: data: https://*.r2.dev https://cdn.devcart.pinenodes.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com",
                             "font-src 'self'",
                             "connect-src 'self' https://api.stripe.com https://sentry.io https://*.ingest.sentry.io",
                             "frame-src 'self' https://js.stripe.com",
@@ -54,7 +54,7 @@ const nextConfig: NextConfig = {
         remotePatterns: [
             {
                 protocol: "https",
-                hostname: "cdn.smikx.me",
+                hostname: "cdn.devcart.pinenodes.com",
                 pathname: "/uploads/**",
             },
             {
