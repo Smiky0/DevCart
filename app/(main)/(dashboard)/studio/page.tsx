@@ -1,7 +1,7 @@
 import ProductCardDashboard from "@/components/products/ProductCardDashboard";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { getImageUrl } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -29,10 +29,7 @@ export default async function ListedProducts() {
     // Count sales per product
     const salesCountMap = new Map<string, number>();
     for (const item of soldItems) {
-        salesCountMap.set(
-            item.productId,
-            (salesCountMap.get(item.productId) || 0) + 1,
-        );
+        salesCountMap.set(item.productId, (salesCountMap.get(item.productId) || 0) + 1);
     }
 
     // Build display list: every product with its sold count (0 if none)
@@ -47,9 +44,7 @@ export default async function ListedProducts() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground">
-                        Dashboard
-                    </h1>
+                    <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
                     <p className="text-muted mt-1">
                         Welcome back, {session?.user?.name || "User"}
                     </p>
@@ -69,16 +64,14 @@ export default async function ListedProducts() {
                     <p className="text-sm font-semibold text-muted uppercase tracking-wide mb-1">
                         Items Sold
                     </p>
-                    <p className="text-3xl font-bold text-foreground">
-                        {totalItemsSold}
-                    </p>
+                    <p className="text-3xl font-bold text-foreground">{totalItemsSold}</p>
                 </div>
                 <div className="bg-surface border border-border/60 rounded-2xl p-6 shadow-sm">
                     <p className="text-sm font-semibold text-muted uppercase tracking-wide mb-1">
                         Revenue
                     </p>
                     <p className="text-3xl font-bold text-foreground">
-                        ${totalRevenue.toFixed(2)}
+                        ${formatPrice(totalRevenue)}
                     </p>
                 </div>
                 <div className="bg-surface border border-border/60 rounded-2xl p-6 shadow-sm">
@@ -111,7 +104,7 @@ export default async function ListedProducts() {
 
                 {/* Table rows */}
                 <div className="divide-y divide-border/40">
-                    {productRows.length > 0 ?
+                    {productRows.length > 0 ? (
                         productRows.map(({ product, count }) => (
                             <ProductCardDashboard
                                 key={product.id}
@@ -124,10 +117,11 @@ export default async function ListedProducts() {
                                 totalProfit={count * product.price}
                             />
                         ))
-                    :   <div className="px-6 py-12 text-center text-muted">
+                    ) : (
+                        <div className="px-6 py-12 text-center text-muted">
                             No products yet. Create one to get started!
                         </div>
-                    }
+                    )}
                 </div>
             </div>
         </div>

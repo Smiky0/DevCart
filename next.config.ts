@@ -2,6 +2,9 @@ import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    // emit a self-contained server bundle for the Docker image
+    output: "standalone",
+
     async headers() {
         return [
             {

@@ -31,9 +31,7 @@ export default function DownloadAssetButton({
 
             if (!res.ok) {
                 const data = await res.json().catch(() => null);
-                throw new Error(
-                    data?.error || "Couldn't download — file may not exist.",
-                );
+                throw new Error(data?.error || "Couldn't download — file may not exist.");
             }
 
             // Trigger browser download from the response blob
@@ -53,9 +51,9 @@ export default function DownloadAssetButton({
         } catch (err) {
             toast.error("Download failed", {
                 description:
-                    err instanceof Error ?
-                        err.message
-                    :   "No file exists or couldn't download.",
+                    err instanceof Error
+                        ? err.message
+                        : "No file exists or couldn't download.",
             });
         } finally {
             setDownloading(false);

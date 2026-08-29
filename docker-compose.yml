@@ -1,0 +1,36 @@
+services:
+    postgres:
+        image: postgres:17-alpine
+        container_name: devcart-postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: devcart_test
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres -d devcart_test"]
+            interval: 5s
+            timeout: 3s
+            retries: 10
+
+    # optional: run the app itself in Docker against a plain local database.
+    # NOTE: Accelerate-only features (cacheStrategy) are bypassed locally;
+    # point DATABASE_URL at this postgres instance when composing up.
+    app:
+        build: .
+        profiles: ["app"]
+        depends_on:
+            postgres:
+                condition: service_healthy
+        environment:
+            DATABASE_URL: postgresql://postgres:postgres@postgres:5432/devcart_test
+            NEXTAUTH_SECRET: dev-secret-change-me
+            CURSOR_SECRET: dev-cursor-secret-change-me
+        ports:
+            - "3000:3000"
+
+volumes:
+    pgdata:

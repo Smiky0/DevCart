@@ -3,10 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-    CaretCircleLeftIcon,
-    CaretCircleRightIcon,
-} from "@phosphor-icons/react";
+import { CaretCircleLeftIcon, CaretCircleRightIcon } from "@phosphor-icons/react";
 
 interface ImageCarouselProps {
     images: string[];
@@ -53,11 +50,7 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
         <div className="relative group">
             {/* Main image */}
             <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-surface-alt border border-border/60 shadow-lg shadow-foreground/15">
-                <AnimatePresence
-                    initial={false}
-                    custom={direction}
-                    mode="popLayout"
-                >
+                <AnimatePresence initial={false} custom={direction} mode="popLayout">
                     <motion.div
                         key={current}
                         custom={direction}
@@ -121,9 +114,9 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
                                 goTo(i);
                             }}
                             className={`relative shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 cursor-pointer ${
-                                i === current ?
-                                    "border-primary shadow-sm"
-                                :   "border-transparent opacity-60 hover:opacity-100"
+                                i === current
+                                    ? "border-primary shadow-sm"
+                                    : "border-transparent opacity-60 hover:opacity-100"
                             }`}
                         >
                             <Image

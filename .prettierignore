@@ -1,0 +1,6 @@
+lib/generated
+prisma/migrations
+.next
+node_modules
+coverage
+pnpm-lock.yaml

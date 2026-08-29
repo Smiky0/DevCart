@@ -2,61 +2,50 @@
 
 A full-stack digital marketplace where creators sell and buyers instantly download digital products — templates, icons, UI kits, fonts, and more.
 
-Built with **Next.js 16**, **React 19**, **Prisma 7**, **Cloudflare R2**, and **NextAuth v5**.
+Built with **Next.js 16** (App Router + Server Actions), **React 19**, **TypeScript 5**, **Prisma 7** (via Prisma Accelerate), **PostgreSQL**, **Cloudflare R2**, **NextAuth v5**, and **Stripe**.
 
----
-
-## Screenshots
-
-<!-- Replace the paths below with actual screenshot images -->
-
-| Page | Screenshot |
-|------|-----------|
-| Home / Shop | ![Shop](screenshots/shop.png) |
-| Product Detail | ![Product](screenshots/product.png) |
-| Cart | ![Cart](screenshots/cart.png) |
-| Studio Dashboard | ![Studio](screenshots/studio.png) |
-| Create Product | ![New Product](screenshots/new_product.png) |
-| Orders / Library | ![Orders](screenshots/orders.png) |
+> **Technical deep-dive:** see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the data model, keyset pagination design, money handling, checkout/webhook fulfillment, security model, and testing strategy.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router, Server Actions) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS v4 |
-| Database | PostgreSQL + Prisma 7 |
-| Auth | NextAuth v5 (GitHub, Google OAuth) |
-| File Storage | Cloudflare R2 (S3-compatible, public + private buckets) |
-| Payments | Stripe (webhook-based) |
-| Animations | Framer Motion |
-| Icons | Phosphor Icons |
-| Notifications | Sonner (toast system) |
-| Error Monitoring | Sentry (client, server, edge) |
-| Rate Limiting | Upstash Redis + `@upstash/ratelimit` |
-| Package Manager | pnpm |
+| Layer            | Technology                                                    |
+| ---------------- | ------------------------------------------------------------- |
+| Framework        | Next.js 16 (App Router, Server Actions, Route Handlers)       |
+| Language         | TypeScript 5 (strict)                                         |
+| Styling          | Tailwind CSS v4                                               |
+| Database         | PostgreSQL + Prisma 7 (Prisma Accelerate for connection mgmt) |
+| Auth             | NextAuth v5 (GitHub + Google OAuth, Prisma adapter)           |
+| File Storage     | Cloudflare R2 (public + private buckets, presigned uploads)   |
+| Payments         | Stripe (Checkout + webhook-based fulfillment)                 |
+| Rate Limiting    | Upstash Redis + `@upstash/ratelimit` (sliding window)         |
+| Error Monitoring | Sentry (client, server, edge)                                 |
+| Animations       | Framer Motion                                                 |
+| Icons            | Phosphor Icons                                                |
+| Notifications    | Sonner                                                        |
+| Package Manager  | pnpm                                                          |
+| Testing          | Vitest (unit + real-Postgres integration)                     |
 
 ---
 
 ## Features
 
-- **Storefront** — Browse products with search, category filtering, and multi-field sorting.
-- **Seller Studio** — Create and manage product listings with drag-and-drop image uploads and downloadable file attachments.
-- **Direct-to-R2 Uploads** — Presigned URL flow: images and assets upload directly from the browser to Cloudflare R2.
-- **Secure Downloads** — Private file assets served through an authenticated API route with ownership verification.
-- **Cart System** — Persistent server-side cart per user with real-time count in the navbar.
-- **Purchase Tracking** — Full buyer/seller transaction records with per-item pricing.
-- **OAuth Authentication** — GitHub + Google sign-in via NextAuth v5 with Prisma adapter.
-- **Responsive UI** — Mobile-first layout with animated page transitions and toast notifications.
-- **Error Monitoring** — Sentry integration across client, server, and edge runtimes with session replay and request error capture.
-- **Rate Limiting** — Upload and download API routes are rate-limited (20 req/min per user) via Upstash Redis sliding window.
+- **Storefront** — Browse with free-text search and category filtering, delivered through **keyset pagination** (load-more; deep pages stay flat regardless of data size).
+- **Seller Studio** — Create and manage product listings with image uploads and downloadable file attachments.
+- **Direct-to-R2 Uploads** — Presigned URL flow; files stream from the browser to R2 (never through the server).
+- **Secure Downloads** — Private assets served through an authenticated route with purchase/seller verification.
+- **Cart System** — Persistent server-side cart per user (one cart per user, `ON DELETE CASCADE`).
+- **Purchase Tracking** — Buyer/seller transaction records with per-item pricing and immutable fulfillment snapshots.
+- **OAuth Authentication** — GitHub + Google via NextAuth v5 with Prisma adapter.
+- **Rate Limiting** — Upload (20/min), download (20/min), and browse (120/min) limits per user/visitor.
+- **Error Monitoring** — Sentry across client, server, and edge runtimes.
+- **Dev/Data Tooling** — Isolated Docker Postgres, 200k-row bulk seeder, keyset-vs-OFFSET benchmark, integration suite.
+- **Fail-fast Configuration** — All required environment variables validated at startup (`lib/env.ts`).
 
 ---
 
-## Architecture
+## Architecture at a Glance
 
 ```
 app/
@@ -65,29 +54,24 @@ app/
 │   └── (dashboard)/         # Authenticated — studio, orders, library
 ├── api/
 │   ├── auth/[...nextauth]/  # NextAuth route handler
+│   ├── products/            # BFF: paginated browse (rate-limited, validated)
 │   ├── upload/              # Presigned URL generation for R2
 │   ├── download/[assetId]/  # Secure file download from R2 private bucket
-│   └── webhooks/stripe/     # Stripe payment webhook
+│   ├── checkout/            # Stripe Checkout session creation from cart
+│   ├── webhooks/stripe/     # Stripe event webhook → order fulfillment
+│   ├── dev/touch/           # (Dev only) churn random products for benchmarking
+│   └── health/              # Liveness probe
 ├── signin/                  # Custom sign-in page
 └── not-found.tsx            # 404 page
 
 server/actions/              # Server actions (cart, product CRUD)
-lib/                         # Prisma client, R2 client, auth config, utils
 components/                  # Shared UI components
-prisma/                      # Schema, migrations, seed, clearDB
+lib/                         # Prisma, R2, auth, cursor, products, env, ratelimit…
+prisma/                      # Schema, migrations, bulk seeder, benchmark
+tests/unit                   # Unit tests (Vitest)
+tests/integration            # Real-Postgres integration tests
+docs/                        # ARCHITECTURE.md
 ```
-
-### Upload Flow
-
-```
-Client ──POST──▶ /api/upload (get presigned URL)
-       ◀─────── { url, key, metadata }
-Client ──PUT───▶ R2 bucket (direct upload with metadata headers)
-       ──────── Storage key saved to database
-```
-
-- **Public bucket** → Cover images (served via `NEXT_PUBLIC_IMAGE_HOST`)
-- **Private bucket** → Downloadable file assets (served through `/api/download` with purchase/ownership check)
 
 ---
 
@@ -95,34 +79,32 @@ Client ──PUT───▶ R2 bucket (direct upload with metadata headers)
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm
-- PostgreSQL database
-- Cloudflare R2 (one public + one private bucket)
+- Node.js 20+, pnpm, Docker (for local DB / integration tests / seeding)
+- Cloudflare R2 account (one public + one private bucket)
 - GitHub and/or Google OAuth app credentials
+- Stripe account (test keys) + Upstash Redis instance
+- Prisma Data Platform project for Accelerate
 
-### 1. Clone & Install
+### 1. Install
 
 ```bash
-git clone <repo-url>
-cd ecommerce-app
 pnpm install
 ```
 
 ### 2. Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file (see `.env.example`). Minimal required set:
 
 ```env
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/devcart
+# Database (Prisma Accelerate URL)
+DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=<accel-key>
 
 # Auth
-AUTH_SECRET=<random-secret>
-AUTH_GITHUB_ID=<github-oauth-client-id>
-AUTH_GITHUB_SECRET=<github-oauth-client-secret>
-AUTH_GOOGLE_ID=<google-oauth-client-id>
-AUTH_GOOGLE_SECRET=<google-oauth-client-secret>
+AUTH_SECRET=<random-secret>            # used as CURSOR_SECRET fallback too
+
+# Rate limiting (Upstash Redis)
+UPSTASH_REDIS_REST_URL=https://<id>.upstash.io
+UPSTASH_REDIS_REST_TOKEN=<token>
 
 # Cloudflare R2
 R2_ACCOUNT_ID=<cloudflare-account-id>
@@ -131,81 +113,120 @@ R2_SECRET_ACCESS_KEY=<r2-secret-key>
 R2_PUBLIC_BUCKET=<public-bucket-name>
 R2_PRIVATE_BUCKET=<private-bucket-name>
 
-# Public URL for cover images
-NEXT_PUBLIC_IMAGE_HOST=https://<your-bucket>.r2.dev
-
 # Stripe
 STRIPE_SECRET_KEY=<stripe-secret-key>
 STRIPE_WEBHOOK_SECRET=<stripe-webhook-signing-secret>
 
-# Upstash Redis (rate limiting)
-UPSTASH_REDIS_REST_URL=<upstash-redis-rest-url>
-UPSTASH_REDIS_REST_TOKEN=<upstash-redis-rest-token>
+# App URL (used for Stripe redirect + image URLs)
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
+
+Optional (see [docs/ARCHITECTURE.md#environment-variables](docs/ARCHITECTURE.md#environment-variables) for the full table):
+
+```env
+AUTH_GITHUB_ID=…            AUTH_GITHUB_SECRET=…
+AUTH_GOOGLE_ID=…            AUTH_GOOGLE_SECRET=…
+NEXT_PUBLIC_IMAGE_HOST=https://<your-bucket>.r2.dev
+CURSOR_SECRET=…             # overrides AUTH_SECRET for cursor signing
+ADMIN_SECRET=…              # dev/touch endpoint
+
+# Data tooling (local Docker only)
+TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/devcart_test
+SEED_COUNT=200000           SEED_SELLERS=200
+SEED_MODE=copy              # copy|batch|bench
+SEED_CHUNK_COPY=1000        SEED_CHUNK_BATCH=2000
+SEED_CHUNK_DELAY_MS=0
+BENCH_DEPTH=150000          BENCH_SAMPLES=20
+```
+
+**Important:** `SEED_DATABASE_URL` and `TEST_DATABASE_URL` are hard-guarded to local hosts only — the seeder and benchmark refuse to run against the cloud/Accelerate database. See [docs/ARCHITECTURE.md#data-tooling-and-cloud-isolation](docs/ARCHITECTURE.md#data-tooling-and-cloud-isolation).
 
 ### 3. Database Setup
 
-```bash
-pnpm prisma generate
-pnpm prisma migrate dev
+The app uses **Prisma Accelerate** in production. Locally, use Docker for the dev/test database:
 
-# Optional: seed sample data
-pnpm prisma db seed
+```bash
+# start the isolated local Postgres (used by dev, tests, seeding, benchmark)
+pnpm db:up
+
+# apply migrations to your cloud/dev database (accelerate URL)
+pnpm prisma migrate dev
 ```
 
 ### 4. R2 CORS Configuration
 
-Add this CORS policy to **both** R2 buckets (public and private) in the Cloudflare dashboard:
+Add this CORS policy to **both** R2 buckets in the Cloudflare dashboard:
 
-| Setting | Value |
-|---------|-------|
-| Allowed Origins | `http://localhost:3000` |
-| Allowed Methods | `GET`, `PUT`, `HEAD` |
+| Setting         | Value                                            |
+| --------------- | ------------------------------------------------ |
+| Allowed Origins | `http://localhost:3000`                          |
+| Allowed Methods | `GET`, `PUT`, `HEAD`                             |
 | Allowed Headers | `content-type`, `content-length`, `x-amz-meta-*` |
 
 ### 5. Run
 
 ```bash
-pnpm dev
+pnpm dev        # http://localhost:3000
+pnpm build      # production build (runs prisma generate first)
 ```
-
-Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm prisma generate` | Regenerate Prisma client |
-| `pnpm prisma migrate dev` | Run database migrations |
-| `pnpm prisma db seed` | Seed sample data |
+| Command                        | Description                                             |
+| ------------------------------ | ------------------------------------------------------- |
+| `pnpm dev`                     | Start development server                                |
+| `pnpm build`                   | `prisma generate` + production Next build               |
+| `pnpm start`                   | Start production server                                 |
+| `pnpm lint`                    | Run ESLint                                              |
+| `pnpm test`                    | Run unit test suite (Vitest)                            |
+| `pnpm test:integration`        | Run real-Postgres integration suite (needs Docker)      |
+| `pnpm db:up` / `pnpm db:down`  | Start / stop the isolated local Postgres container      |
+| `pnpm seed:bulk`               | Bulk-seed products into the **local** DB (default 200k) |
+| `pnpm bench:pagination`        | Keyset vs OFFSET benchmark on the **local** DB          |
+| `pnpm format` / `format:check` | Prettier write / check                                  |
+
+Typical data pipeline (all against the isolated Docker DB — never the cloud DB):
+
+```bash
+pnpm db:up
+pnpm seed:bulk                       # truncate + insert 200k products
+pnpm bench:pagination                # keyset vs OFFSET timing report
+pnpm test:integration                # resets DB to a small fixture
+pnpm seed:bulk                       # re-seed before another benchmark
+```
+
+---
+
+## Testing
+
+- **Unit** (`pnpm test`): cursor signing/verification, pagination SQL construction (`$queryRaw` mocking), product/server actions, cart, checkout, webhook, upload, download, dev/touch, health, utils, order metadata, env.
+- **Integration** (`pnpm test:integration`): real-Postgres invariants — deep-walk stability under inserts/touches, category exactness, zero-duplicates/full-coverage, tampered-cursor→400 via the real route handler, API/service parity. Runs only when `TEST_DATABASE_URL` points at a local host (skips otherwise).
+
+CI (`.github/workflows/ci.yml`) runs quality (unit + lint + tsc + Prettier), integration against a Postgres service container via the real migration chain (`prisma migrate deploy`), and builds/pushes the production image to GHCR on `main`.
 
 ---
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `lib/auth.ts` | NextAuth config — GitHub + Google providers, Prisma adapter |
-| `lib/prisma.ts` | Prisma client singleton with `@prisma/adapter-pg` |
-| `lib/cloudflareR2.ts` | S3-compatible R2 client |
-| `lib/utils.ts` | Shared utilities (`getImageUrl` for R2 public URLs) |
-| `server/actions/cart.ts` | Cart server actions (add/remove items) |
-| `server/actions/product.ts` | Product CRUD server actions |
-| `prisma/schema.prisma` | Database schema (User, Product, FileAsset, Cart, Purchase) |
-| `prisma/seed.ts` | Sample data seeder |
-| `prisma/clearDB.ts` | Truncate all tables (respects FK constraints) |
-| `lib/ratelimit.ts` | Upstash rate limiters for upload/download routes |
-| `sentry.server.config.ts` | Sentry server-side initialization |
-| `sentry.edge.config.ts` | Sentry edge runtime initialization |
-| `instrumentation-client.ts` | Sentry client-side initialization with session replay |
-| `instrumentation.ts` | Next.js instrumentation hook — loads Sentry configs |
-| `app/global-error.tsx` | Global error boundary — reports uncaught errors to Sentry |
+| File                                | Purpose                                                    |
+| ----------------------------------- | ---------------------------------------------------------- |
+| `lib/env.ts`                        | Centralized startup validation of environment variables    |
+| `lib/auth.ts`                       | NextAuth config (GitHub + Google, Prisma adapter)          |
+| `lib/prisma.ts`                     | Prisma client singleton with `withAccelerate`              |
+| `lib/products.ts`                   | Keyset-paginated product query (row-value index seek)      |
+| `lib/cursor.ts`                     | Signed, tamper-proof pagination cursors (HMAC-SHA256)      |
+| `lib/orderMetadata.ts`              | Immutable checkout purchase snapshot encoding              |
+| `lib/cloudflareR2.ts`               | S3-compatible R2 client                                    |
+| `lib/ratelimit.ts`                  | Upload / download / browse rate limiters                   |
+| `server/actions/cart.ts`            | Cart server actions                                        |
+| `server/actions/product.ts`         | Product CRUD server actions (DB-first delete + R2 cleanup) |
+| `prisma/schema.prisma`              | Database schema                                            |
+| `prisma/seed-bulk.ts`               | Chunked bulk seeder (COPY/createMany) — **local DB only**  |
+| `prisma/bench-pagination.ts`        | Keyset vs OFFSET benchmark — **local DB only**             |
+| `Dockerfile` / `docker-compose.yml` | Standalone image + local Postgres service                  |
+| `docs/ARCHITECTURE.md`              | Full technical architecture                                |
 
 ---
 

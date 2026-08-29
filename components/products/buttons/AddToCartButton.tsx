@@ -6,13 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-function AddToCartButton({
-    userId,
-    productId,
-}: {
-    userId?: string;
-    productId: string;
-}) {
+function AddToCartButton({ userId, productId }: { userId?: string; productId: string }) {
     const [loading, setLoading] = useState<boolean>(false);
     const [productAdded, setProductAdded] = useState<boolean>(false);
     const router = useRouter();
@@ -24,11 +18,12 @@ function AddToCartButton({
         setLoading(true);
         // if user doesnt exist then ask to login
         if (!userId) {
+            setLoading(false);
             router.push("/api/auth/signin");
             return;
         }
         // if user and product id exist; add to cart :)
-        const result = await addToCart(userId, productId);
+        const result = await addToCart(productId);
         setLoading(false);
 
         // if added or exists

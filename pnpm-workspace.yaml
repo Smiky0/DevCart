@@ -1,16 +1,16 @@
 packages:
-  - .
+    - .
 onlyBuiltDependencies:
-  - "@prisma/engines"
-  - esbuild
-  - prisma
+    - "@prisma/engines"
+    - esbuild
+    - prisma
 ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+    - sharp
+    - unrs-resolver
 allowBuilds:
-  '@prisma/engines': true
-  '@sentry/cli': true
-  esbuild: true
-  prisma: true
-  sharp: true
-  unrs-resolver: true
+    "@prisma/engines": true
+    "@sentry/cli": true
+    esbuild: true
+    prisma: true
+    sharp: true
+    unrs-resolver: true

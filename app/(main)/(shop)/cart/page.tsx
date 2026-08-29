@@ -1,19 +1,12 @@
 import { BuyButton } from "@/components/products/buttons/BuyButton";
 import ProductCard from "@/components/products/ProductCard";
-import {
-    AnimatedCard,
-    FadeIn,
-    PopIn,
-} from "@/components/motion/MotionWrappers";
+import { AnimatedCard, FadeIn, PopIn } from "@/components/motion/MotionWrappers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { getImageUrl } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-    CaretDoubleLeftIcon,
-    ShoppingCartIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { CaretDoubleLeftIcon, ShoppingCartIcon } from "@phosphor-icons/react/dist/ssr";
 
 export default async function ItemsPage() {
     // get the userid from userauth
@@ -30,8 +23,8 @@ export default async function ItemsPage() {
         },
         include: {
             product: true,
-		},
-		cacheStrategy: {ttl: 60, swr: 20}
+        },
+        cacheStrategy: { ttl: 60, swr: 20 },
     });
     // find total price of cart items.
     const totalPrice = cartItems.reduce((acc, item) => {
@@ -40,11 +33,9 @@ export default async function ItemsPage() {
     return (
         <div className="py-6">
             <FadeIn>
-                <h1 className="text-3xl font-bold text-foreground mb-6">
-                    Your Cart
-                </h1>
+                <h1 className="text-3xl font-bold text-foreground mb-6">Your Cart</h1>
             </FadeIn>
-            {cartItems.length ?
+            {cartItems.length ? (
                 <FadeIn delay={0.1}>
                     <div className="flex flex-col md:flex-row gap-3 items-center justify-between w-full bg-surface border border-border/60 rounded-2xl px-6 py-4 shadow-sm mb-8">
                         <div className="flex items-center gap-6 text-sm font-medium text-foreground">
@@ -58,14 +49,15 @@ export default async function ItemsPage() {
                             </span>
                             <PopIn delay={0.25}>
                                 <span className="text-2xl font-bold text-foreground">
-                                    ${totalPrice.toFixed(2)}
+                                    ${formatPrice(totalPrice)}
                                 </span>
                             </PopIn>
                         </div>
                         <BuyButton price={totalPrice} />
                     </div>
                 </FadeIn>
-            :   <FadeIn delay={0.1}>
+            ) : (
+                <FadeIn delay={0.1}>
                     <div className="text-center py-16">
                         <PopIn delay={0.15}>
                             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
@@ -76,21 +68,17 @@ export default async function ItemsPage() {
                                 />
                             </div>
                         </PopIn>
-                        <p className="text-lg text-muted mb-2">
-                            Your cart is empty
-                        </p>
+                        <p className="text-lg text-muted mb-2">Your cart is empty</p>
                         <Link
                             href={"/"}
                             className="flex items-center justify-center gap-2 text-primary font-medium hover:text-primary-dark transition-colors"
                         >
                             <CaretDoubleLeftIcon />
-                            <span className="leading-none pb-px">
-                                Browse products
-                            </span>
+                            <span className="leading-none pb-px">Browse products</span>
                         </Link>
                     </div>
                 </FadeIn>
-            }
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cartItems.map((item, index) => (
@@ -103,6 +91,7 @@ export default async function ItemsPage() {
                             imageUrl={getImageUrl(item.product.images[0])}
                             cartItemId={item.id}
                             addItem={false}
+                            userId={userId}
                         />
                     </AnimatedCard>
                 ))}

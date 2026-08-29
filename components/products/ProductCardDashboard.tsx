@@ -1,6 +1,7 @@
 import DeleteProductButton from "./buttons/DeleteProductButton";
 import Image from "next/image";
 import Link from "next/link";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductCardDashboardProps {
     id: string;
@@ -28,7 +29,7 @@ function ProductCardDashboard({
                 href={`/product/${id}`}
                 className="sm:col-span-4 flex items-center gap-3"
             >
-                {productImage ?
+                {productImage ? (
                     <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-surface-alt shrink-0">
                         <Image
                             src={productImage}
@@ -38,12 +39,13 @@ function ProductCardDashboard({
                             className="w-full h-full object-cover"
                         />
                     </div>
-                :   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                ) : (
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <span className="text-primary text-sm font-bold">
                             {productTitle.charAt(0).toUpperCase()}
                         </span>
                     </div>
-                }
+                )}
                 <span className="font-medium text-foreground text-sm truncate hover:text-primary transition-colors">
                     {productTitle}
                 </span>
@@ -59,7 +61,7 @@ function ProductCardDashboard({
             {/* Price */}
             <div className="sm:col-span-2 text-right">
                 <span className="text-sm font-semibold text-foreground">
-                    ${price.toFixed(2)}
+                    ${formatPrice(price)}
                 </span>
             </div>
 
@@ -73,7 +75,7 @@ function ProductCardDashboard({
                 <span
                     className={`text-sm font-semibold ${totalProfit > 0 ? "text-success" : "text-muted"}`}
                 >
-                    ${totalProfit.toFixed(2)}
+                    ${formatPrice(totalProfit)}
                 </span>
             </div>
 

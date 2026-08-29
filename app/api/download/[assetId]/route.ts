@@ -17,10 +17,7 @@ export async function GET(
     const session = await auth();
     const userId = session?.user?.id;
     if (!userId) {
-        return NextResponse.json(
-            { error: "Not authenticated" },
-            { status: 401 },
-        );
+        return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
     // check for download rate limit
     const { success } = await downloadRatelimit.limit(userId);
@@ -36,25 +33,19 @@ export async function GET(
     const { assetId } = await params;
 
     try {
-        // Look up the file asset and verify ownership via purchase
+        // Look up the file asset; ownership is verified below
         const fileAsset = await prisma.fileAsset.findUnique({
             where: { id: assetId },
-            include: {
-                product: {
-                    include: {
-                        purchaseItems: {
-                            where: { seller: { id: userId } },
-                        },
-                    },
-                },
+            select: {
+                productId: true,
+                storageKey: true,
+                fileName: true,
+                product: { select: { sellerId: true } },
             },
         });
 
         if (!fileAsset) {
-            return NextResponse.json(
-                { error: "Asset not found" },
-                { status: 404 },
-            );
+            return NextResponse.json({ error: "Asset not found" }, { status: 404 });
         }
 
         // Check if user bought this product OR is the seller
@@ -106,9 +97,7 @@ export async function GET(
             ".sketch": "application/octet-stream",
         };
         const contentType =
-            r2Response.ContentType ||
-            mimeTypes[ext] ||
-            "application/octet-stream";
+            r2Response.ContentType || mimeTypes[ext] || "application/octet-stream";
 
         // Convert the R2 readable stream to a web ReadableStream
         const stream = r2Response.Body.transformToWebStream() as ReadableStream;

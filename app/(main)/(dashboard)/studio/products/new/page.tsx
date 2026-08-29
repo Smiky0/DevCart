@@ -42,9 +42,9 @@ export default function NewProductPage() {
     const [isPending, startTransition] = useTransition();
 
     // Cover images state (previewUrl for display, key for R2 storage)
-    const [coverImages, setCoverImages] = useState<
-        { previewUrl: string; key: string }[]
-    >([]);
+    const [coverImages, setCoverImages] = useState<{ previewUrl: string; key: string }[]>(
+        [],
+    );
     const [isUploadingImage, setIsUploadingImage] = useState(false);
 
     // File asset state
@@ -98,8 +98,7 @@ export default function NewProductPage() {
                         method: "PUT",
                         headers: {
                             "Content-Type": file.type,
-                            "x-amz-meta-originalfilename":
-                                metadata.originalfilename,
+                            "x-amz-meta-originalfilename": metadata.originalfilename,
                             "x-amz-meta-uploadedby": metadata.uploadedby,
                         },
                         body: file,
@@ -133,9 +132,7 @@ export default function NewProductPage() {
         setIsUploading(true);
         if (file.size > MAX_FILE_SIZE)
             return toast.error(
-                "File size can't be greater than " +
-                    MAX_FILE_SIZE / 1024 +
-                    "KB.",
+                "File size can't be greater than " + MAX_FILE_SIZE / 1024 + "KB.",
             );
         try {
             // get the signed URL
@@ -205,10 +202,7 @@ export default function NewProductPage() {
         const formData = new FormData(e.currentTarget);
 
         // Append cover images as JSON
-        formData.append(
-            "images",
-            JSON.stringify(coverImages.map((img) => img.key)),
-        );
+        formData.append("images", JSON.stringify(coverImages.map((img) => img.key)));
 
         // Append file asset data as hidden fields
         if (fileAsset) {
@@ -381,11 +375,11 @@ export default function NewProductPage() {
                                 Digital File
                             </h2>
                             <p className="text-xs text-muted">
-                                Upload the file buyers will receive after
-                                purchase. Any file type is accepted.
+                                Upload the file buyers will receive after purchase. Any
+                                file type is accepted.
                             </p>
 
-                            {!fileAsset ?
+                            {!fileAsset ? (
                                 <div
                                     onDragOver={(e) => {
                                         e.preventDefault();
@@ -394,9 +388,9 @@ export default function NewProductPage() {
                                     onDragLeave={() => setDragActive(false)}
                                     onDrop={handleDrop}
                                     className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed py-12 px-6 transition-all duration-200 cursor-pointer ${
-                                        dragActive ?
-                                            "border-primary bg-primary/5"
-                                        :   "border-border/60 hover:border-primary/40 hover:bg-surface-alt/40"
+                                        dragActive
+                                            ? "border-primary bg-primary/5"
+                                            : "border-border/60 hover:border-primary/40 hover:bg-surface-alt/40"
                                     }`}
                                 >
                                     <input
@@ -408,14 +402,15 @@ export default function NewProductPage() {
                                         }}
                                         disabled={isUploading}
                                     />
-                                    {isUploading ?
+                                    {isUploading ? (
                                         <>
                                             <span className="h-8 w-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin mb-3" />
                                             <p className="text-sm font-medium text-foreground">
                                                 Uploading...
                                             </p>
                                         </>
-                                    :   <>
+                                    ) : (
+                                        <>
                                             <UploadIcon
                                                 size={28}
                                                 weight="duotone"
@@ -428,18 +423,16 @@ export default function NewProductPage() {
                                                 </span>
                                             </p>
                                             <p className="text-xs text-muted mt-1">
-                                                ZIP, PDF, PSD, AI, Figma, MP4,
-                                                or any format
+                                                ZIP, PDF, PSD, AI, Figma, MP4, or any
+                                                format
                                             </p>
                                         </>
-                                    }
+                                    )}
                                 </div>
-                            :   <div className="flex items-center gap-4 rounded-xl border border-border/60 bg-surface-alt/40 p-4">
+                            ) : (
+                                <div className="flex items-center gap-4 rounded-xl border border-border/60 bg-surface-alt/40 p-4">
                                     <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-primary shrink-0">
-                                        <FileCloudIcon
-                                            size={20}
-                                            weight="duotone"
-                                        />
+                                        <FileCloudIcon size={20} weight="duotone" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-semibold text-foreground truncate">
@@ -457,7 +450,7 @@ export default function NewProductPage() {
                                         <XIcon size={16} weight="bold" />
                                     </button>
                                 </div>
-                            }
+                            )}
                         </div>
                     </div>
 
@@ -474,8 +467,8 @@ export default function NewProductPage() {
                                 Cover Images
                             </h2>
                             <p className="text-xs text-muted">
-                                Upload one or more images. The first image will
-                                be used as the thumbnail.
+                                Upload one or more images. The first image will be used as
+                                the thumbnail.
                             </p>
 
                             {/* Upload zone */}
@@ -486,23 +479,21 @@ export default function NewProductPage() {
                                     multiple
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     onChange={(e) => {
-                                        if (
-                                            e.target.files &&
-                                            e.target.files.length > 0
-                                        ) {
+                                        if (e.target.files && e.target.files.length > 0) {
                                             handleImageUpload(e.target.files);
                                         }
                                     }}
                                     disabled={isUploadingImage}
                                 />
-                                {isUploadingImage ?
+                                {isUploadingImage ? (
                                     <>
                                         <span className="h-7 w-7 border-3 border-primary/30 border-t-primary rounded-full animate-spin mb-2" />
                                         <p className="text-sm font-medium text-foreground">
                                             Uploading...
                                         </p>
                                     </>
-                                :   <>
+                                ) : (
+                                    <>
                                         <UploadIcon
                                             size={24}
                                             weight="duotone"
@@ -510,15 +501,13 @@ export default function NewProductPage() {
                                         />
                                         <p className="text-sm font-medium text-foreground">
                                             Drop images or{" "}
-                                            <span className="text-primary">
-                                                browse
-                                            </span>
+                                            <span className="text-primary">browse</span>
                                         </p>
                                         <p className="text-xs text-muted mt-0.5">
                                             PNG, JPG, WEBP, SVG
                                         </p>
                                     </>
-                                }
+                                )}
                             </div>
                             <p className="text-xs text-muted">
                                 {
@@ -550,17 +539,12 @@ export default function NewProductPage() {
                                                 type="button"
                                                 onClick={() =>
                                                     setCoverImages((prev) =>
-                                                        prev.filter(
-                                                            (_, j) => j !== i,
-                                                        ),
+                                                        prev.filter((_, j) => j !== i),
                                                     )
                                                 }
                                                 className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity cursor-pointer hover:bg-danger"
                                             >
-                                                <XIcon
-                                                    size={14}
-                                                    weight="bold"
-                                                />
+                                                <XIcon size={14} weight="bold" />
                                             </button>
                                         </div>
                                     ))}
@@ -575,12 +559,14 @@ export default function NewProductPage() {
                                 disabled={isPending}
                                 className="w-full px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-surface text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                             >
-                                {isPending ?
+                                {isPending ? (
                                     <span className="flex items-center justify-center gap-2">
                                         <span className="h-4 w-4 border-2 border-surface/30 border-t-surface rounded-full animate-spin" />
                                         Creating...
                                     </span>
-                                :   "Create Product"}
+                                ) : (
+                                    "Create Product"
+                                )}
                             </button>
                             <Link
                                 href="/studio"

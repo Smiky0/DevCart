@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { getImageUrl } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -24,16 +24,11 @@ export default async function CheckoutPage() {
         return redirect("/cart");
     }
 
-    const totalPrice = userCart.items.reduce(
-        (sum, item) => sum + item.product.price,
-        0,
-    );
+    const totalPrice = userCart.items.reduce((sum, item) => sum + item.product.price, 0);
 
     return (
         <div className="py-6 animate-fade-in-up">
-            <h1 className="text-3xl font-bold text-foreground mb-8">
-                Checkout
-            </h1>
+            <h1 className="text-3xl font-bold text-foreground mb-8">Checkout</h1>
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Order Summary */}
                 <div className="flex-1 bg-surface border border-border/60 rounded-2xl p-8 shadow-sm">
@@ -48,9 +43,7 @@ export default async function CheckoutPage() {
                             >
                                 {item.product.images[0] && (
                                     <Image
-                                        src={getImageUrl(
-                                            item.product.images[0],
-                                        )}
+                                        src={getImageUrl(item.product.images[0])}
                                         alt={item.product.title}
                                         className="w-14 h-14 object-cover rounded-lg"
                                     />
@@ -64,7 +57,7 @@ export default async function CheckoutPage() {
                                     </p>
                                 </div>
                                 <span className="font-semibold text-foreground">
-                                    ${item.product.price.toFixed(2)}
+                                    ${formatPrice(item.product.price)}
                                 </span>
                             </div>
                         ))}
@@ -79,11 +72,11 @@ export default async function CheckoutPage() {
                     <div className="space-y-3 mb-6">
                         <div className="flex justify-between text-sm text-muted">
                             <span>Items ({userCart.items.length})</span>
-                            <span>${totalPrice.toFixed(2)}</span>
+                            <span>${formatPrice(totalPrice)}</span>
                         </div>
                         <div className="border-t border-border/60 pt-3 flex justify-between font-bold text-foreground">
                             <span>Total</span>
-                            <span>${totalPrice.toFixed(2)}</span>
+                            <span>${formatPrice(totalPrice)}</span>
                         </div>
                     </div>
                     <CheckoutButton />

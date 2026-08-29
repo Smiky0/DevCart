@@ -25,15 +25,13 @@ export default async function page() {
                     },
                 },
             },
-		},
-		cacheStrategy:{ttl: 300, swr: 30}
+        },
+        cacheStrategy: { ttl: 300, swr: 30 },
     });
     return (
         <div className="py-6 animate-fade-in-up">
-            <h1 className="text-3xl font-bold text-foreground mb-6">
-                Your Orders
-            </h1>
-            {orders.length === 0 ?
+            <h1 className="text-3xl font-bold text-foreground mb-6">Your Orders</h1>
+            {orders.length === 0 ? (
                 <div className="text-center py-16">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                         <span className="text-3xl">
@@ -42,7 +40,8 @@ export default async function page() {
                     </div>
                     <p className="text-lg text-muted">No orders yet</p>
                 </div>
-            :   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {orders.map((order) =>
                         order.items.map((item) => (
                             <ProductCard
@@ -56,11 +55,12 @@ export default async function page() {
                                 isPurchased={true}
                                 fileAssetId={item.product.fileAsset?.id}
                                 fileAssetName={item.product.fileAsset?.fileName}
+                                userId={userId}
                             />
                         )),
                     )}
                 </div>
-            }
+            )}
         </div>
     );
 }

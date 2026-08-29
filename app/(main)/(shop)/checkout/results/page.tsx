@@ -1,5 +1,4 @@
 import { stripe } from "@/lib/stripe";
-import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -14,56 +13,20 @@ export default async function CheckoutResultsPage({
         return redirect("/cart");
     }
 
-    let session;
+    let paid = false;
     try {
-        session = await stripe.checkout.sessions.retrieve(session_id);
+        const session = await stripe.checkout.sessions.retrieve(session_id);
+        paid = session.status === "complete" && session.payment_status === "paid";
     } catch {
         return redirect("/cart");
     }
 
-    const isSuccess = session.payment_status === "paid";
-
-    // If payment succeeded, fulfill the order
-    if (isSuccess && session.metadata?.userId && session.metadata?.cartId) {
-        const { userId, cartId } = session.metadata;
-
-        // Check if cart still has items (prevents double-processing on refresh)
-        const cartItems = await prisma.cartItem.findMany({
-            where: { cartId },
-            include: { product: true },
-        });
-
-        if (cartItems.length > 0) {
-            const totalAmount = cartItems.reduce(
-                (sum, item) => sum + item.product.price,
-                0,
-            );
-
-            await prisma.$transaction(async (tx) => {
-                await tx.purchase.create({
-                    data: {
-                        buyerId: userId,
-                        totalAmount,
-                        items: {
-                            create: cartItems.map((item) => ({
-                                productId: item.productId,
-                                sellerId: item.product.sellerId,
-                                price: item.product.price,
-                            })),
-                        },
-                    },
-                });
-
-                await tx.cartItem.deleteMany({
-                    where: { cartId },
-                });
-            });
-        }
-    }
+    // Fulfillment itself is handled by the /api/webhooks/stripe endpoint;
+    // this page only shows the outcome of the payment.
 
     return (
         <div className="py-16 text-center animate-fade-in-up">
-            {isSuccess ?
+            {paid ? (
                 <>
                     <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-success/10 flex items-center justify-center">
                         <span className="text-4xl">&#10003;</span>
@@ -72,8 +35,8 @@ export default async function CheckoutResultsPage({
                         Purchase Complete!
                     </h1>
                     <p className="text-lg text-muted max-w-md mx-auto mb-8">
-                        Thank you for your purchase. Your digital products are
-                        now available for download.
+                        Thank you for your purchase. Your digital products are now
+                        available for download.
                     </p>
                     <Link
                         href="/orders"
@@ -82,7 +45,8 @@ export default async function CheckoutResultsPage({
                         Go to Orders
                     </Link>
                 </>
-            :   <>
+            ) : (
+                <>
                     <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-danger/10 flex items-center justify-center">
                         <span className="text-4xl">&#10007;</span>
                     </div>
@@ -90,8 +54,7 @@ export default async function CheckoutResultsPage({
                         Payment Failed
                     </h1>
                     <p className="text-lg text-muted max-w-md mx-auto mb-8">
-                        Something went wrong with your payment. Please try
-                        again.
+                        Something went wrong with your payment. Please try again.
                     </p>
                     <Link
                         href="/cart"
@@ -100,7 +63,7 @@ export default async function CheckoutResultsPage({
                         Return to Cart
                     </Link>
                 </>
-            }
+            )}
         </div>
     );
 }

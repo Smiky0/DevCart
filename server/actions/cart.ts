@@ -1,10 +1,21 @@
 "use server";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { error } from "console";
 import { revalidatePath } from "next/cache";
 
+// resolve the current user's id from their session; never trust a client
+// supplied userId.
+async function getSessionUserId(): Promise<string | null> {
+    const session = await auth();
+    return session?.user?.id ?? null;
+}
+
 // get current user cart
-export async function getCart(userId: string) {
+export async function getCart() {
+    const userId = await getSessionUserId();
+    if (!userId) {
+        return null;
+    }
     return await prisma.cart.findUnique({
         where: { userId },
         include: {
@@ -16,15 +27,20 @@ export async function getCart(userId: string) {
 }
 
 // add item to cart
-export async function addToCart(userId: string, productId: string) {
+export async function addToCart(productId: string) {
+    const userId = await getSessionUserId();
+    if (!userId) {
+        return { success: false, message: "Not authenticated." };
+    }
+
     // find cart for this user
-    const cart = await prisma.cart.findUnique({
+    let cart = await prisma.cart.findUnique({
         where: { userId },
     });
     // if user has no cart yet
     if (!cart) {
         // create a new cart for the user
-        await prisma.cart.create({
+        cart = await prisma.cart.create({
             data: { userId },
         });
     }
@@ -35,13 +51,13 @@ export async function addToCart(userId: string, productId: string) {
         const productExist = await prisma.cartItem.findFirst({
             where: {
                 productId: productId,
-                cartId: cart!.id,
+                cartId: cart.id,
             },
         });
         if (productExist) {
             return {
-				success: true,
-				status:"exist",
+                success: true,
+                status: "exist",
                 message: "Item already exists in your cart!",
             };
         }
@@ -49,7 +65,7 @@ export async function addToCart(userId: string, productId: string) {
         // if this item isnt added before; simply add now
         await prisma.cartItem.create({
             data: {
-                cartId: cart!.id,
+                cartId: cart.id,
                 productId: productId,
             },
         });
@@ -60,11 +76,16 @@ export async function addToCart(userId: string, productId: string) {
 
     // when new item is added. (return statement of try block)
     revalidatePath("/cart", "page");
-    return { success: true, status:"added", message: "Item added." };
+    return { success: true, status: "added", message: "Item added." };
 }
 
 // remove item from cart
-export async function removeFromCart(userId: string, itemId: string) {
+export async function removeFromCart(itemId: string) {
+    const userId = await getSessionUserId();
+    if (!userId) {
+        return { success: false, message: "Not authenticated." };
+    }
+
     try {
         // make sure the cart belongs to the user
         const cart = await prisma.cart.findUnique({ where: { userId } });
@@ -76,14 +97,14 @@ export async function removeFromCart(userId: string, itemId: string) {
                     id: itemId,
                     cartId: cart.id,
                 },
-			});
-			// if item was deleted
-			if (deleteItem.count) {
-				return { success: true, message: "Item removed from cart!" };
-			}
-		}
-		// if cart doesnt belong to user; throw error.
-        throw error;
+            });
+            // if item was deleted
+            if (deleteItem.count) {
+                return { success: true, message: "Item removed from cart!" };
+            }
+        }
+        // if cart doesnt belong to user; throw error.
+        throw new Error("Cart not found for user");
     } catch {
         return { success: false, message: "Couldnt remove item" };
     } finally {

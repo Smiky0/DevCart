@@ -3,7 +3,7 @@ import ImageCarousel from "@/components/products/ImageCarousel";
 import { FadeIn, ScaleIn } from "@/components/motion/MotionWrappers";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { getImageUrl } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
@@ -70,17 +70,14 @@ export default async function ProductPage({
                         <div className="mt-6 rounded-2xl border border-border/60 bg-surface p-6 shadow-sm">
                             <div className="flex items-baseline gap-2">
                                 <span className="text-3xl font-sans font-medium tracking-tight text-foreground">
-                                    ${product.price.toFixed(2)}
+                                    ${formatPrice(product.price)}
                                 </span>
                                 <span className="text-sm text-muted">
                                     one-time payment
                                 </span>
                             </div>
                             <div className="mt-4">
-                                <AddToCartButton
-                                    userId={userId}
-                                    productId={productId}
-                                />
+                                <AddToCartButton userId={userId} productId={productId} />
                             </div>
                             <div className="mt-4 flex items-center gap-4 text-xs text-muted">
                                 <span className="flex items-center gap-1">

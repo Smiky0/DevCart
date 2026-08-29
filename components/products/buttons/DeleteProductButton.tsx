@@ -6,11 +6,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrashIcon, XIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 
-export default function DeleteProductButton({
-    productId,
-}: {
-    productId: string;
-}) {
+export default function DeleteProductButton({ productId }: { productId: string }) {
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
@@ -105,9 +101,8 @@ export default function DeleteProductButton({
                                         Delete this product?
                                     </h3>
                                     <p className="text-sm text-muted leading-relaxed">
-                                        This will permanently remove the product
-                                        and all associated data. This action
-                                        cannot be undone.
+                                        This will permanently remove the product and all
+                                        associated data. This action cannot be undone.
                                     </p>
                                 </motion.div>
 
@@ -146,9 +141,7 @@ export default function DeleteProductButton({
                                             />
                                         )}
                                         <TrashIcon size={16} weight="bold" />
-                                        <span>
-                                            {loading ? "Deleting…" : "Delete"}
-                                        </span>
+                                        <span>{loading ? "Deleting…" : "Delete"}</span>
                                     </button>
                                 </motion.div>
                             </div>

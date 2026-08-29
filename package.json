@@ -7,6 +7,16 @@
         "build": "prisma generate && next build",
         "start": "next start",
         "lint": "eslint",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "test:integration": "vitest run -c vitest.integration.config.ts",
+        "db:up": "docker compose up -d postgres --wait",
+        "db:down": "docker compose down",
+        "seed:bulk": "tsx prisma/seed-bulk.ts",
+        "bench:pagination": "tsx prisma/bench-pagination.ts",
         "postinstall": "prisma generate"
     },
     "dependencies": {
@@ -33,14 +43,21 @@
     "devDependencies": {
         "@tailwindcss/postcss": "^4",
         "@types/node": "^20",
+        "@types/pg": "^8.23.1",
+        "@types/pg-copy-streams": "^1.2.5",
         "@types/react": "^19",
         "@types/react-dom": "^19",
+        "@vitest/coverage-v8": "^4.1.11",
         "dotenv": "^17.2.3",
         "eslint": "^9",
         "eslint-config-next": "16.1.1",
+        "pg": "^8.23.0",
+        "pg-copy-streams": "^7.0.0",
+        "prettier": "^3.9.6",
         "prisma": "^7.2.0",
         "tailwindcss": "^4",
         "tsx": "^4.21.0",
-        "typescript": "^5"
+        "typescript": "^5",
+        "vitest": "^4.1.11"
     }
 }

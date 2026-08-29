@@ -1,0 +1,108 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+    quality:
+        name: Lint, typecheck, unit tests, build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 11
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: pnpm
+
+            - run: pnpm install --no-frozen-lockfile
+
+            - run: pnpm lint
+
+            - run: npx tsc --noEmit
+
+            - run: pnpm test
+
+            - run: pnpm build
+              env:
+                  NEXT_TELEMETRY_DISABLED: 1
+
+    integration:
+        name: Pagination integration tests (real Postgres)
+        runs-on: ubuntu-latest
+        services:
+            postgres:
+                image: postgres:17-alpine
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: devcart_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U postgres -d devcart_test"
+                    --health-interval 5s
+                    --health-timeout 3s
+                    --health-retries 10
+        env:
+            TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/devcart_test
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 11
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: pnpm
+
+            - run: pnpm install --no-frozen-lockfile
+
+            # apply the real migration chain to the fresh service database,
+            # then run the suite
+            - run: npx prisma migrate deploy
+              env:
+                  DATABASE_URL: ${{ env.TEST_DATABASE_URL }}
+
+            - run: pnpm test:integration
+
+    docker:
+        name: Docker build (and push on main)
+        runs-on: ubuntu-latest
+        needs: [quality]
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: docker/setup-buildx-action@v3
+
+            - uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+            - uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  push: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+                  tags: |
+                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max

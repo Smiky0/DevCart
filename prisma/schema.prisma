@@ -28,7 +28,7 @@ model User {
     purchases       Purchase[] // Things user bought
     cart            Cart?
 
-    CreatedAt DateTime @default(now())
+    createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     accounts      Account[]
@@ -82,7 +82,8 @@ model Product {
     sellerId    String
     title       String
     description String  @db.Text
-    price       Float
+    // in cents, to avoid floating point money bugs
+    price       Int
     isPublished Boolean @default(false)
 
     // category of item
@@ -94,9 +95,17 @@ model Product {
     // The actual protected file to download
     fileAsset FileAsset?
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     seller        User           @relation(fields: [sellerId], references: [id])
     cartItems     CartItem[]
     purchaseItems PurchaseItem[]
+
+    // keyset pagination indexes: browse all / filter by category,
+    // both ordered by most recently updated first
+    @@index([updatedAt(sort: Desc), id(sort: Desc)])
+    @@index([category, updatedAt(sort: Desc), id(sort: Desc)])
 }
 
 // the Secure File (Hidden from public)
@@ -116,7 +125,11 @@ model Purchase {
     buyerId String
     buyer   User   @relation(fields: [buyerId], references: [id])
 
-    totalAmount Float
+    // Stripe Checkout session that paid for this order (idempotency guard)
+    stripeSessionId String? @unique
+
+    // in cents, to avoid floating point money bugs
+    totalAmount Int
     createdAt   DateTime @default(now())
 
     items PurchaseItem[]
@@ -133,18 +146,19 @@ model PurchaseItem {
     sellerId String
     seller   User   @relation(fields: [sellerId], references: [id])
 
-    price Float
+    // in cents, to avoid floating point money bugs
+    price Int
 
     @@unique([purchaseId, productId])
 }
 
 // The cart database for each user
 model Cart {
-    id       String     @id @default(cuid())
-    userId   String?    @unique
-    items    CartItem[]
-    updateAt DateTime   @updatedAt
-    user     User?      @relation(fields: [userId], references: [id])
+    id        String     @id @default(cuid())
+    userId    String     @unique
+    items     CartItem[]
+    updatedAt DateTime   @updatedAt
+    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Items in one's cart

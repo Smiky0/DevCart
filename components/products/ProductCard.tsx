@@ -1,10 +1,10 @@
-"use server";
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import AddToCartButton from "./buttons/AddToCartButton";
 import RemoveFromCart from "./buttons/RemoveFromCartButton";
 import DownloadAssetButton from "./buttons/DownloadAssetButton";
-import { auth } from "@/lib/auth";
+import { formatPrice } from "@/lib/utils";
 
 interface ProductCardProps {
     id: string;
@@ -17,9 +17,12 @@ interface ProductCardProps {
     isPurchased?: boolean;
     fileAssetId?: string;
     fileAssetName?: string;
+    // used only to decide the sign-in redirect target; the cart
+    // actions derive the real identity from the session server-side.
+    userId?: string | null;
 }
 
-export default async function ProductCard({
+export default function ProductCard({
     id,
     title,
     category,
@@ -30,12 +33,8 @@ export default async function ProductCard({
     isPurchased,
     fileAssetId,
     fileAssetName,
+    userId,
 }: ProductCardProps) {
-    // if logged in pass the userID
-    // else will be asked when add to cart is called
-    const session = await auth();
-    const userId = session?.user?.id;
-
     return (
         <Link href={`/product/${id}`}>
             <div className="group relative flex flex-col w-full overflow-hidden rounded-2xl bg-surface shadow-md shadow-foreground/8 transition-all duration-200 hover:shadow-xl hover:shadow-foreground/15 hover:-translate-y-1">
@@ -64,24 +63,29 @@ export default async function ProductCard({
                         {title}
                     </h3>
                     <span className="mt-2 text-2xl font-sans font-medium text-foreground">
-                        ${price.toFixed(2)}
+                        ${formatPrice(price)}
                     </span>
                 </div>
 
                 {/* Footer: Action button */}
                 <div className="mx-5 mb-5 mt-3 border-t-2 border-dashed border-border/60 pt-4">
                     <div className="flex items-center justify-center">
-                        {fileAssetId || isPurchased ?
+                        {fileAssetId || isPurchased ? (
                             <DownloadAssetButton
                                 assetId={fileAssetId}
                                 fileName={fileAssetName}
                             />
-                        : !addItem && cartItemId ?
+                        ) : !addItem && cartItemId ? (
                             <RemoveFromCart
-                                userId={userId}
+                                userId={userId ?? undefined}
                                 cartItemId={cartItemId}
                             />
-                        :   <AddToCartButton userId={userId} productId={id} />}
+                        ) : (
+                            <AddToCartButton
+                                userId={userId ?? undefined}
+                                productId={id}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

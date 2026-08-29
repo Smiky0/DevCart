@@ -12,11 +12,7 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-export default function UserLogin({
-    userSession,
-}: {
-    userSession: Session | null;
-}) {
+export default function UserLogin({ userSession }: { userSession: Session | null }) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
@@ -55,7 +51,7 @@ export default function UserLogin({
 
     return (
         <div className="flex items-center relative">
-            {!!userSession ?
+            {!!userSession ? (
                 <div className="flex justify-center items-center gap-2">
                     <span className="hidden md:flex font-mono text-base font-medium text-foreground/90 px-2">
                         Hi, {userSession.user?.name?.split(" ")[0] || "User"}
@@ -143,10 +139,7 @@ export default function UserLogin({
                                             onClick={handleSignOut}
                                             className="w-full px-4 py-2.5 text-sm font-sans text-red-600 cursor-pointer hover:bg-red-500 hover:text-surface hover:font-semibold flex items-center gap-3 transition-colors rounded-2xl"
                                         >
-                                            <SignOutIcon
-                                                size={16}
-                                                weight="bold"
-                                            />
+                                            <SignOutIcon size={16} weight="bold" />
                                             Logout
                                         </motion.button>
                                     </div>
@@ -155,7 +148,8 @@ export default function UserLogin({
                         </AnimatePresence>
                     </div>
                 </div>
-            :   <div className="flex justify-center items-center gap-2">
+            ) : (
+                <div className="flex justify-center items-center gap-2">
                     <motion.span
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -173,7 +167,7 @@ export default function UserLogin({
                         Sign In
                     </motion.span>
                 </div>
-            }
+            )}
         </div>
     );
 }

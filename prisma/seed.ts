@@ -29,8 +29,7 @@ async function main() {
                 id: "prod_2",
                 sellerId: userId,
                 title: "Glassmorphism 3D Icon Pack",
-                description:
-                    "A set of 80 high-resolution 3D icons rendered in Blender.",
+                description: "A set of 80 high-resolution 3D icons rendered in Blender.",
                 price: 1500,
                 isPublished: true,
                 category: "Icons",

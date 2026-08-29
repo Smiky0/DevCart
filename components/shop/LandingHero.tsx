@@ -24,14 +24,13 @@ export default function LandingHero() {
                         Digital Marketplace V1.1
                     </span>
                     <h1 className="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground mb-6 leading-none">
-                        Discover{" "}
-                        <span className="text-primary italic">Digital</span>{" "}
+                        Discover <span className="text-primary italic">Digital</span>{" "}
                         Products
                     </h1>
                     <p className="text-lg md:text-xl text-muted mb-10 max-w-lg leading-relaxed">
-                        Premium templates, tools, and assets — download
-                        instantly and build something amazing. Curated by
-                        experts for professional creators.
+                        Premium templates, tools, and assets — download instantly and
+                        build something amazing. Curated by experts for professional
+                        creators.
                     </p>
                     <div className="flex flex-wrap gap-4">
                         <button

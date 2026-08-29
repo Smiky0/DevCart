@@ -6,13 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-function RemoveFromCart({
-    userId,
-    cartItemId,
-}: {
-    userId?: string;
-    cartItemId: string;
-}) {
+function RemoveFromCart({ userId, cartItemId }: { userId?: string; cartItemId: string }) {
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
 
@@ -23,11 +17,12 @@ function RemoveFromCart({
         setLoading(true);
         // if userId is not passed; ask to login
         if (!userId) {
+            setLoading(false);
             router.push("/api/auth/signin");
             return;
         }
 
-        const result = await removeFromCart(userId, cartItemId);
+        const result = await removeFromCart(cartItemId);
         setLoading(false);
         // alert(result.message);
         if (result.success) {
